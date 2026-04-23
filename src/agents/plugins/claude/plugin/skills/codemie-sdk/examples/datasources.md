@@ -1,6 +1,6 @@
 # Datasources Examples
 
-> **Important:** `create` and `update` require a **type subcommand**: `confluence`, `jira`, `file`, `code`, `google`
+> **Important:** `create` and `update` require a **type subcommand**: `confluence`, `jira`, `file`, `code`, `google`, `azure-devops-wiki`, `azure-devops-work-item`, `xray`, `sharepoint`, `platform`
 >
 > **Name constraint:** must match `^[a-zA-Z0-9][\w-]*$` — no spaces, use hyphens (e.g. `my-wiki`, not `My Wiki`)
 
@@ -198,6 +198,10 @@ codemie sdk datasources update jira <id> --data '{"name":"support-tickets","proj
 codemie sdk datasources update file <id> --data '{"name":"team-docs","project_name":"Engineering","description":"Updated docs"}'
 codemie sdk datasources update code <id> --json updates.json
 # Output: ✓ Incremental reindexing of datasource <name> has been started in the background
+codemie sdk datasources update azure-devops-wiki <id> --data '{"organization":"my-org","project":"my-project","wiki_name":"updated-wiki"}'
+codemie sdk datasources update azure-devops-work-item <id> --data '{"wiql_query":"SELECT [Id],[Title] FROM WorkItems WHERE [System.State]!='\''Closed'\''"}'
+codemie sdk datasources update xray <id> --data '{"jql":"project=QA AND issuetype in testExecutions()"}'
+codemie sdk datasources update sharepoint <id> --data '{"include_lists":true,"skip_reindex":true}'
 ```
 
 **Update-only reindex flags** (add to any update payload):
@@ -228,7 +232,7 @@ codemie sdk datasources delete <id>
 
 After creating a datasource, attach it to an assistant via the assistant's `context` field.
 
-- Use `context_type: "knowledge_base"` for file, Confluence, Jira, and Google datasources.
+- Use `context_type: "knowledge_base"` for file, Confluence, Jira, Google, Azure DevOps Wiki, Azure DevOps Work Item, Xray, SharePoint, and JSON datasources.
 - Use `context_type: "code"` for code repository datasources.
 
 ```bash
@@ -243,6 +247,126 @@ codemie sdk assistants update <assistant-id> --data "{
 ```
 
 > See [Assistants — Linking a Datasource](assistants.md#linking-a-datasource) for full details.
+
+### Azure DevOps Wiki
+
+> Requires an **AzureDevOps integration** already configured in the project.
+> Get the integration ID: `codemie sdk integrations list --setting-type project --json | jq -r '.[] | select(.credential_type=="AzureDevOps") | "\(.id) \(.alias)"'`
+
+```bash
+codemie sdk datasources create azure-devops-wiki --data '{
+  "name": "ado-wiki",
+  "project_name": "Engineering",
+  "organization": "my-org",
+  "project": "my-project",
+  "wiki_name": "my-wiki",
+  "description": "Azure DevOps team wiki",
+  "shared_with_project": true
+}'
+```
+
+**Azure DevOps Wiki-specific fields:**
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `organization` | — | Azure DevOps organization name |
+| `project` | — | Azure DevOps project name |
+| `wiki_name` | — | Name of the wiki to index |
+| `wiki_query` | — | Query to filter wiki pages |
+
+### Azure DevOps Work Item
+
+> Requires an **AzureDevOps integration** already configured in the project.
+
+```bash
+codemie sdk datasources create azure-devops-work-item --data '{
+  "name": "ado-work-items",
+  "project_name": "Engineering",
+  "organization": "my-org",
+  "project": "my-project",
+  "wiql_query": "SELECT [Id],[Title],[State] FROM WorkItems WHERE [System.TeamProject]=@project AND [System.State]!='\''Closed'\''",
+  "description": "Azure DevOps work items",
+  "shared_with_project": true
+}'
+```
+
+**Azure DevOps Work Item-specific fields:**
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `organization` | — | Azure DevOps organization name |
+| `project` | — | Azure DevOps project name |
+| `wiql_query` | — | WIQL query to filter work items — e.g. `SELECT [Id],[Title] FROM WorkItems WHERE [System.State]!='Closed'` |
+
+### Xray
+
+> Requires a **Jira integration** already configured (Xray is a Jira plugin).
+> Get the integration ID: `codemie sdk integrations list --setting-type project --json | jq -r '.[] | select(.credential_type=="Jira") | "\(.id) \(.alias)"'`
+
+```bash
+codemie sdk datasources create xray --data '{
+  "name": "xray-tests",
+  "project_name": "QA",
+  "jql": "project=QA AND issuetype in testExecutions()",
+  "description": "Xray test execution data",
+  "shared_with_project": true
+}'
+```
+
+**Xray-specific fields:**
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `jql` | ✅ | Jira Query Language to filter Xray test issues |
+
+### SharePoint
+
+> Requires a **SharePoint integration** or OAuth credentials.
+
+```bash
+codemie sdk datasources create sharepoint --data '{
+  "name": "sharepoint-docs",
+  "project_name": "Engineering",
+  "site_url": "https://company.sharepoint.com/sites/team",
+  "include_pages": true,
+  "include_documents": true,
+  "description": "SharePoint team site",
+  "shared_with_project": true
+}'
+```
+
+**SharePoint-specific fields:**
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `site_url` | ✅ | SharePoint site URL (must start with `https://`) |
+| `include_pages` | — | Index SharePoint site pages |
+| `include_documents` | — | Index document libraries |
+| `include_lists` | — | Index list items |
+| `max_file_size_mb` | — | Maximum file size in MB to index (1–500, default 50) |
+| `files_filter` | — | Gitignore-style file/path filter |
+| `auth_type` | — | Authentication method: `integration`, `oauth_codemie`, or `oauth_custom` |
+| `access_token` | — | OAuth access token (required for `oauth_codemie` and `oauth_custom`) |
+| `oauth_client_id` | — | Azure app client ID (`oauth_custom` only) |
+| `oauth_tenant_id` | — | Azure AD tenant ID (`oauth_custom` only) |
+| `embedding_model` | — | Override default embedding model |
+| `cron_expression` | — | Cron expression for scheduled reindexing |
+
+**Full SharePoint example:**
+```json
+{
+  "name": "team-sharepoint",
+  "project_name": "Engineering",
+  "site_url": "https://company.sharepoint.com/sites/engineering",
+  "include_pages": true,
+  "include_documents": true,
+  "include_lists": false,
+  "max_file_size_mb": 50,
+  "auth_type": "integration",
+  "description": "Engineering SharePoint site",
+  "shared_with_project": true
+}
+```
 
 ### JSON Knowledge Base
 
@@ -288,7 +412,18 @@ codemie sdk datasources create chunk-summary --data '{
 }'
 ```
 
-**Fields for json, provider, summary, chunk-summary (base fields only):**
+### Platform
+
+```bash
+codemie sdk datasources create platform --data '{
+  "name": "platform-assistant",
+  "project_name": "Team",
+  "description": "Platform marketplace assistant",
+  "shared_with_project": true
+}'
+```
+
+**Fields for json, provider, summary, chunk-summary, platform (base fields only):**
 
 | Field | Required | Description |
 |-------|----------|-------------|

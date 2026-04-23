@@ -69,7 +69,7 @@ codemie sdk integrations create --json jira-integration.json
 | `enabled` | — | `false` = disable the integration without deleting it (default: `true`) |
 | `external_id` | — | External system identifier for cross-referencing with other tools |
 
-**Common `credential_type` values:** `Jira`, `Confluence`, `Git`, `AWS`, `GCP`, `Azure`, `Keycloak`, `Elastic`, `OpenAPI`, `Webhook`, `SQL`, `MCP`, `LiteLLM`, `AzureDevOps`, `ServiceNow`, `Telegram`
+**All supported `credential_type` values:** `Jira`, `Confluence`, `Git`, `Kubernetes`, `AWS`, `GCP`, `Azure`, `Keycloak`, `Elastic`, `OpenAPI`, `Plugin`, `FileSystem`, `Scheduler`, `Webhook`, `Email`, `AzureDevOps`, `Sonar`, `SQL`, `Telegram`, `ZephyrScale`, `ZephyrSquad`, `ServiceNow`, `DIAL`, `A2A`, `MCP`, `LiteLLM`, `ReportPortal`, `Xray`, `SharePoint`
 
 > **Important:** `credential_values` **must include an `alias` key** with the same value as the top-level `alias` field, otherwise the API returns an error. Always add `{"key": "alias", "value": "<alias>"}` to the array.
 
@@ -115,7 +115,100 @@ codemie sdk integrations create --json jira-integration.json
   "setting_type": "user",
   "credential_values": [
     {"key": "base_url", "value": "http://localhost:4000"},
-    {"key": "api_key", "value": "sk-master-key"}
+    {"key": "api_key", "value": "sk-master-key"},
+    {"key": "alias", "value": "litellm-proxy"}
+  ]
+}
+```
+
+**AzureDevOps:**
+```json
+{
+  "credential_type": "AzureDevOps",
+  "project_name": "Engineering",
+  "alias": "ado-main",
+  "setting_type": "project",
+  "credential_values": [
+    {"key": "url", "value": "https://dev.azure.com/my-org"},
+    {"key": "token", "value": "your-pat-token"},
+    {"key": "alias", "value": "ado-main"}
+  ]
+}
+```
+
+**SharePoint:**
+```json
+{
+  "credential_type": "SharePoint",
+  "project_name": "Engineering",
+  "alias": "sharepoint-main",
+  "setting_type": "project",
+  "credential_values": [
+    {"key": "site_url", "value": "https://company.sharepoint.com/sites/team"},
+    {"key": "client_id", "value": "your-client-id"},
+    {"key": "client_secret", "value": "your-client-secret"},
+    {"key": "tenant_id", "value": "your-tenant-id"},
+    {"key": "alias", "value": "sharepoint-main"}
+  ]
+}
+```
+
+**Xray:**
+```json
+{
+  "credential_type": "Xray",
+  "project_name": "QA",
+  "alias": "xray-main",
+  "setting_type": "project",
+  "credential_values": [
+    {"key": "client_id", "value": "your-xray-client-id"},
+    {"key": "client_secret", "value": "your-xray-client-secret"},
+    {"key": "alias", "value": "xray-main"}
+  ]
+}
+```
+
+**ZephyrScale:**
+```json
+{
+  "credential_type": "ZephyrScale",
+  "project_name": "QA",
+  "alias": "zephyr-scale",
+  "setting_type": "user",
+  "credential_values": [
+    {"key": "url", "value": "https://company.atlassian.net"},
+    {"key": "token", "value": "your-zephyr-api-token"},
+    {"key": "alias", "value": "zephyr-scale"}
+  ]
+}
+```
+
+**ServiceNow:**
+```json
+{
+  "credential_type": "ServiceNow",
+  "project_name": "ITSM",
+  "alias": "servicenow-main",
+  "setting_type": "project",
+  "credential_values": [
+    {"key": "url", "value": "https://company.service-now.com"},
+    {"key": "username", "value": "api-user"},
+    {"key": "password", "value": "api-password"},
+    {"key": "alias", "value": "servicenow-main"}
+  ]
+}
+```
+
+**MCP:**
+```json
+{
+  "credential_type": "MCP",
+  "project_name": "AI",
+  "alias": "mcp-server",
+  "setting_type": "user",
+  "credential_values": [
+    {"key": "url", "value": "http://localhost:3000"},
+    {"key": "alias", "value": "mcp-server"}
   ]
 }
 ```

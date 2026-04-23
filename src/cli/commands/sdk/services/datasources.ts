@@ -1,5 +1,9 @@
 import type {
   CodeMieClient,
+  AzureDevOpsWikiDataSourceCreateParams,
+  AzureDevOpsWikiDataSourceUpdateParams,
+  AzureDevOpsWorkItemDataSourceCreateParams,
+  AzureDevOpsWorkItemDataSourceUpdateParams,
   ConfluenceDataSourceCreateParams,
   ConfluenceDataSourceUpdateParams,
   DataSource,
@@ -11,6 +15,10 @@ import type {
   JiraDataSourceUpdateParams,
   OtherDataSourceCreateParams,
   OtherDataSourceUpdateParams,
+  SharePointDataSourceCreateParams,
+  SharePointDataSourceUpdateParams,
+  XrayDataSourceCreateParams,
+  XrayDataSourceUpdateParams,
 } from "codemie-sdk";
 import { readFilesFromPaths } from "../utils/file-utils.js";
 
@@ -291,6 +299,136 @@ export async function updateChunkSummaryDatasource(
   const existing = await client.datasources.get(id);
   const params: OtherDataSourceUpdateParams = {
     type: "chunk-summary",
+    name: existing.name,
+    project_name: existing.project_name,
+    ...data,
+  };
+  return client.datasources.update(params);
+}
+
+// AZURE DEVOPS WIKI
+export async function createAzureDevOpsWikiDatasource(
+  client: CodeMieClient,
+  data: Omit<AzureDevOpsWikiDataSourceCreateParams, "type">,
+): Promise<unknown> {
+  return client.datasources.create({
+    ...data,
+    type: "knowledge_base_azure_devops_wiki",
+  });
+}
+
+export async function updateAzureDevOpsWikiDatasource(
+  client: CodeMieClient,
+  id: string,
+  data: Partial<Omit<AzureDevOpsWikiDataSourceUpdateParams, "type">>,
+): Promise<unknown> {
+  const existing = await client.datasources.get(id);
+  const params: AzureDevOpsWikiDataSourceUpdateParams = {
+    type: "knowledge_base_azure_devops_wiki",
+    name: existing.name,
+    project_name: existing.project_name,
+    ...data,
+  };
+  return client.datasources.update(params);
+}
+
+// AZURE DEVOPS WORK ITEM
+export async function createAzureDevOpsWorkItemDatasource(
+  client: CodeMieClient,
+  data: Omit<AzureDevOpsWorkItemDataSourceCreateParams, "type">,
+): Promise<unknown> {
+  return client.datasources.create({
+    ...data,
+    type: "knowledge_base_azure_devops_work_item",
+  });
+}
+
+export async function updateAzureDevOpsWorkItemDatasource(
+  client: CodeMieClient,
+  id: string,
+  data: Partial<Omit<AzureDevOpsWorkItemDataSourceUpdateParams, "type">>,
+): Promise<unknown> {
+  const existing = await client.datasources.get(id);
+  const params: AzureDevOpsWorkItemDataSourceUpdateParams = {
+    type: "knowledge_base_azure_devops_work_item",
+    name: existing.name,
+    project_name: existing.project_name,
+    ...data,
+  };
+  return client.datasources.update(params);
+}
+
+// XRAY
+export async function createXrayDatasource(
+  client: CodeMieClient,
+  data: Omit<XrayDataSourceCreateParams, "type">,
+): Promise<unknown> {
+  return client.datasources.create({
+    ...data,
+    type: "knowledge_base_xray",
+  });
+}
+
+export async function updateXrayDatasource(
+  client: CodeMieClient,
+  id: string,
+  data: Partial<Omit<XrayDataSourceUpdateParams, "type">>,
+): Promise<unknown> {
+  const existing = await client.datasources.get(id);
+  const params: XrayDataSourceUpdateParams = {
+    type: "knowledge_base_xray",
+    name: existing.name,
+    project_name: existing.project_name,
+    ...data,
+  };
+  return client.datasources.update(params);
+}
+
+// SHAREPOINT
+export async function createSharepointDatasource(
+  client: CodeMieClient,
+  data: Omit<SharePointDataSourceCreateParams, "type">,
+): Promise<unknown> {
+  return client.datasources.create({
+    ...data,
+    type: "knowledge_base_sharepoint",
+  });
+}
+
+export async function updateSharepointDatasource(
+  client: CodeMieClient,
+  id: string,
+  data: Partial<Omit<SharePointDataSourceUpdateParams, "type">>,
+): Promise<unknown> {
+  const existing = await client.datasources.get(id);
+  const params: SharePointDataSourceUpdateParams = {
+    type: "knowledge_base_sharepoint",
+    name: existing.name,
+    project_name: existing.project_name,
+    ...data,
+  };
+  return client.datasources.update(params);
+}
+
+// PLATFORM
+export async function createPlatformDatasource(
+  client: CodeMieClient,
+  data: Omit<OtherDataSourceCreateParams, "type">,
+): Promise<unknown> {
+  return client.datasources.create({
+    ...data,
+    type: "platform_marketplace_assistant",
+  });
+}
+
+export async function updatePlatformDatasource(
+  client: CodeMieClient,
+  id: string,
+  data: Partial<Omit<OtherDataSourceUpdateParams, "type">>,
+): Promise<unknown> {
+  const existing = await client.datasources.get(id);
+  const params: OtherDataSourceUpdateParams = {
+    type: "platform_marketplace_assistant",
     name: existing.name,
     project_name: existing.project_name,
     ...data,

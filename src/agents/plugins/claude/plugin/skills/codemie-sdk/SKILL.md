@@ -113,7 +113,7 @@ codemie sdk workflows delete <id>
 
 > See [examples/datasources.md](examples/datasources.md) for full field reference and examples.
 
-Datasources use **type subcommands** for create/update: `confluence`, `jira`, `file`, `code`, `google`, `json`, `provider`, `summary`, `chunk-summary`
+Datasources use **type subcommands** for create/update: `confluence`, `jira`, `file`, `code`, `google`, `json`, `provider`, `summary`, `chunk-summary`, `azure-devops-wiki`, `azure-devops-work-item`, `xray`, `sharepoint`, `platform`
 
 ```bash
 codemie sdk datasources list [--search <text>] [--projects <name>] [--status <status>] [--datasource-types <types>] [--sort-key date|update_date] [--sort-order asc|desc] [--page <n>] [--per-page <n>] [--json]

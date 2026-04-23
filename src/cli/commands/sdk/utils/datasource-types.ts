@@ -71,4 +71,41 @@ export const DATASOURCE_TYPES: DatasourceTypeConfig[] = [
     example:
       '{"name":"my-chunk-summary","project_name":"Team","description":"Chunk summary datasource","shared_with_project":true}',
   },
+  {
+    command: "azure-devops-wiki",
+    serviceKey: "azureDevOpsWiki",
+    type: "knowledge_base_azure_devops_wiki",
+    description: "Azure DevOps Wiki datasource",
+    example:
+      '{"name":"ado-wiki","project_name":"Engineering","organization":"my-org","project":"my-project","wiki_name":"my-wiki","description":"Team wiki","shared_with_project":true}',
+  },
+  {
+    command: "azure-devops-work-item",
+    serviceKey: "azureDevOpsWorkItem",
+    type: "knowledge_base_azure_devops_work_item",
+    description: "Azure DevOps Work Item datasource",
+    example:
+      '{"name":"ado-work-items","project_name":"Engineering","organization":"my-org","project":"my-project","wiql_query":"SELECT [Id],[Title] FROM WorkItems WHERE [System.TeamProject]=@project","description":"ADO work items","shared_with_project":true}',
+  },
+  {
+    command: "xray",
+    type: "knowledge_base_xray",
+    description: "Xray test management datasource",
+    example:
+      '{"name":"xray-tests","project_name":"QA","jql":"project=QA AND issuetype in testExecutions()","description":"Xray test data","shared_with_project":true}',
+  },
+  {
+    command: "sharepoint",
+    type: "knowledge_base_sharepoint",
+    description: "SharePoint datasource",
+    example:
+      '{"name":"sharepoint-docs","project_name":"Engineering","site_url":"https://company.sharepoint.com/sites/team","include_pages":true,"include_documents":true,"description":"SharePoint team site","shared_with_project":true}',
+  },
+  {
+    command: "platform",
+    type: "platform_marketplace_assistant",
+    description: "Platform marketplace assistant datasource",
+    example:
+      '{"name":"platform-assistant","project_name":"Team","description":"Platform marketplace assistant","shared_with_project":true}',
+  },
 ];
