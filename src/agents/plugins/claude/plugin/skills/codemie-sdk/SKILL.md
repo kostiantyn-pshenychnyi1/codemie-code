@@ -1,10 +1,11 @@
 ---
 name: codemie-sdk
 description: >-
-  Manage CodeMie platform assets (assistants, workflows, datasources, integrations) directly from CLI
+  Manage CodeMie platform assets (assistants, workflows, datasources, integrations, skills, users) directly from CLI
   using CodeMie SDK. Use when user says "create assistant", "list workflows", "update datasource",
   "delete assistant", "show my assistants", "get workflow details", "manage integrations",
   "create integration", "list integrations", "list llm models", "list embedding models",
+  "list skills", "get skill", "who am i", "current user", "my profile", "user info",
   or any request to manage CodeMie platform resources.
 ---
 
@@ -12,7 +13,7 @@ description: >-
 
 Manage CodeMie platform assets from the CLI.
 
-**Asset Types:** `assistants`, `workflows`, `datasources`, `integrations`
+**Asset Types:** `assistants`, `workflows`, `datasources`, `integrations`, `skills`, `users`
 
 **Operations:** `list`, `get`, `create`, `update`, `delete`
 
@@ -42,6 +43,8 @@ This applies to **all asset types**: assistants, workflows, datasources, and int
 | Workflows | [examples/workflows.md](examples/workflows.md) |
 | Datasources | [examples/datasources.md](examples/datasources.md) |
 | Integrations | [examples/integrations.md](examples/integrations.md) |
+| Skills | [examples/skills.md](examples/skills.md) |
+| Users | [examples/users.md](examples/users.md) |
 
 Do **not** guess field names or skip this step — all required/optional fields, nested schemas, and asset cross-reference commands are documented there.
 
@@ -168,3 +171,33 @@ codemie sdk llm list --embeddings [--json]
 Returns `LLMModel` objects. Key fields: `base_name`, `label`, `provider`, `default`, `enabled`.
 
 Use `base_name` when setting `llm_model_type` on an assistant or `embeddings_model`/`summarization_model` on a datasource.
+
+---
+
+## Skills
+
+> See [examples/skills.md](examples/skills.md) for full field reference and examples.
+
+```bash
+codemie sdk skills list [--scope marketplace|project|project_with_marketplace] [--page <n>] [--per-page <n>] [--json]
+codemie sdk skills get <id> [--json]
+```
+
+**Key fields:** `id`, `name`, `project`, `visibility`, `description`, `content`, `created_by`, `created_date`
+
+**`--scope` values:** `marketplace`, `project`, `project_with_marketplace`
+
+---
+
+## Users
+
+> See [examples/users.md](examples/users.md) for full field reference and examples.
+
+```bash
+codemie sdk users me [--json]
+codemie sdk users data [--json]
+```
+
+**`users me`** — current user profile. Fields: `name`, `username`, `applications`, `picture`
+
+**`users data`** — user preferences and metadata. Fields: `id`, `user_id`, `date`, `update_date`, `sidebar_view`, `stt_support`
