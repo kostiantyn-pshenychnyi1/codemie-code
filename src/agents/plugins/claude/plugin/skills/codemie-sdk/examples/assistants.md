@@ -65,7 +65,7 @@ codemie sdk assistants create --json assistant.json
 | `mcp_servers` | — | array | MCP server connections for additional tools — see schema below |
 | `assistant_ids` | — | string[] | Sub-assistant IDs for orchestration (multi-agent workflows) |
 | `prompt_variables` | — | array | Dynamic `{{variable}}` placeholders in the system prompt — see schema below |
-| `categories` | — | string[] | Labels for marketplace classification (e.g. `["DevOps", "Code Review"]`) |
+| `categories` | — | string[] | Label IDs for marketplace classification (e.g. `["devops", "code-review"]`). You can manage assistants categories via codemie sdk categories command (get, create, update and so on). Only categories listed via this command can be used in this field |
 | `skill_ids` | — | string[] | Built-in platform skill IDs — **not** datasource IDs |
 | `skip_integration_validation` | — | boolean | Skip credential validation when attaching toolkits (useful with test credentials) |
 
@@ -161,7 +161,7 @@ Reference in system prompt as `{{language}}`.
     { "key": "language", "description": "Primary language", "default_value": "TypeScript" },
     { "key": "focus_area", "description": "Review focus", "default_value": "security and performance" }
   ],
-  "categories": ["Code Review", "Engineering"]
+  "categories": ["code-review", "engineering"]
 }
 ```
 

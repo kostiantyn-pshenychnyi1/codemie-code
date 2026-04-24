@@ -1,11 +1,13 @@
 ---
 name: codemie-sdk
 description: >-
-  Manage CodeMie platform assets (assistants, workflows, datasources, integrations, skills, users) directly from CLI
+  Manage CodeMie platform assets (assistants, workflows, datasources, integrations, skills, users, categories) directly from CLI
   using CodeMie SDK. Use when user says "create assistant", "list workflows", "update datasource",
   "delete assistant", "show my assistants", "get workflow details", "manage integrations",
   "create integration", "list integrations", "list llm models", "list embedding models",
-  "list skills", "get skill", "who am i", "current user", "my profile", "user info",
+  "list skills", "get skill", "create skill", "update skill", "delete skill", "publish skill",
+  "import skill", "export skill", "attach skill", "list categories", "get category",
+  "create category", "delete category", "who am i", "current user", "my profile", "user info",
   or any request to manage CodeMie platform resources.
 ---
 
@@ -13,7 +15,7 @@ description: >-
 
 Manage CodeMie platform assets from the CLI.
 
-**Asset Types:** `assistants`, `workflows`, `datasources`, `integrations`, `skills`, `users`
+**Asset Types:** `assistants`, `workflows`, `datasources`, `integrations`, `skills`, `users`, `categories`
 
 **Operations:** `list`, `get`, `create`, `update`, `delete`
 
@@ -21,15 +23,47 @@ Manage CodeMie platform assets from the CLI.
 
 ## 🚨 Project Clarification (MANDATORY)
 
-**Before doing any work**, check if the user has specified a project.
+**Before proceeding with any work, you must determine which project to use by following these steps:**
 
-- All asset types use `project_name` except assistants which use `project`.
-- If the project is **not specified** → **ask the user** before running any commands.
-- If the project **is specified** → proceed directly.
+### Step 1 — Fetch the User Profile
 
-Example prompt: *"Which CodeMie project should I use for this operation?"*
+```bash
+codemie sdk users me --json
+```
 
-This applies to **all asset types**: assistants, workflows, datasources, and integrations.
+This command returns `user_id`, `username`, `email`, `is_admin`, `applications`, and `applications_admin`.
+
+### Step 2 — Identify Available Projects
+
+- If `is_admin = true`: the user can access **all** projects on the platform, not just those listed in `applications`.
+- If `is_admin = false`: the user can only work with projects listed in `applications`.
+- The **default project** is the one matching the user's email (e.g., for `alice@acme.com`, the default project is `alice@acme.com`).
+
+### Step 3 — Confirm the Project Selection
+
+- If the user **explicitly** states a project name, or uses phrases like **"use my project"** or **"in my project"**, proceed with the identified project (use the default project for phrases like "my project" or "my default project").
+- In **all other cases**, ALWAYS ask the user which project to use.
+
+Aks the user what project to use with the options as follows:
+
+1. **Default project** — `<user-email>` *(personal default project)*
+2. **Choose a different project** — let the user to manually type the project name.
+
+**Example prompt:**
+> *Which project should I use?*  
+> *1. alice@acme.com (your default project)*  
+> *2. Choose a different project*
+
+---
+
+**Note:**  
+Only select a project automatically if the user has explicitly named it, or used clear phrases indicating the default (e.g., "my project", "my default project"). In all other situations, always ask for project clarification.
+
+### Step 4 — Proceed
+
+Once the project is known, use it in all subsequent commands:
+- Assistants, skills, categories: `"project": "<name>"`
+- Workflows, datasources, integrations: `"project_name": "<name>"`
 
 ---
 
@@ -45,6 +79,7 @@ This applies to **all asset types**: assistants, workflows, datasources, and int
 | Integrations | [examples/integrations.md](examples/integrations.md) |
 | Skills | [examples/skills.md](examples/skills.md) |
 | Users | [examples/users.md](examples/users.md) |
+| Categories | [examples/categories.md](examples/categories.md) |
 
 Do **not** guess field names or skip this step — all required/optional fields, nested schemas, and asset cross-reference commands are documented there.
 
@@ -181,11 +216,31 @@ Use `base_name` when setting `llm_model_type` on an assistant or `embeddings_mod
 ```bash
 codemie sdk skills list [--scope marketplace|project|project_with_marketplace] [--page <n>] [--per-page <n>] [--json]
 codemie sdk skills get <id> [--json]
+codemie sdk skills create --data '<json>' | --json <file>
+codemie sdk skills update <id> --data '<json>' | --json <file>
+codemie sdk skills delete <id>
+codemie sdk skills import <file.md> --project <name> [--visibility private|project|public] [--json]
+codemie sdk skills export <id>
+codemie sdk skills attach <assistant-id> <skill-id>
+codemie sdk skills detach <assistant-id> <skill-id>
+codemie sdk skills list-assistant-skills <assistant-id> [--json]
+codemie sdk skills bulk-attach <skill-id> --assistant-ids <id1>,<id2>,...
+codemie sdk skills get-assistants <skill-id> [--json]
+codemie sdk skills publish <id> [--categories <cat1>,<cat2>]
+codemie sdk skills unpublish <id>
+codemie sdk skills list-categories [--json]
+codemie sdk skills get-users [--json]
+codemie sdk skills react <id> --reaction like|dislike
+codemie sdk skills remove-reactions <id>
 ```
 
-**Key fields:** `id`, `name`, `project`, `visibility`, `description`, `content`, `created_by`, `created_date`
+**Required on create:** `name` (kebab-case, 3–64 chars), `description` (10–1000 chars), `content` (markdown, min 100 chars), `project`
+
+**Key fields:** `id`, `name`, `project`, `visibility`, `description`, `content`, `created_by`, `createdDate`, `assistants_count`, `categories`
 
 **`--scope` values:** `marketplace`, `project`, `project_with_marketplace`
+
+**`visibility` values:** `private`, `project`, `public`
 
 ---
 
@@ -198,6 +253,32 @@ codemie sdk users me [--json]
 codemie sdk users data [--json]
 ```
 
-**`users me`** — current user profile. Fields: `name`, `username`, `applications`, `picture`
+**`users me`** — current user profile. Fields: `user_id`, `name`, `username`, `email`, `is_admin`, `applications`, `applications_admin`, `picture`, `knowledge_bases`
 
-**`users data`** — user preferences and metadata. Fields: `id`, `user_id`, `date`, `update_date`, `sidebar_view`, `stt_support`
+**`users data`** — user preferences and metadata. Fields: `id`, `user_id`, `date`, `update_date`
+
+---
+
+## Categories
+
+> See [examples/categories.md](examples/categories.md) for full field reference and examples.
+
+**Note:** Categories can only be used for assistants (set via the `categories` field on create/update).
+
+```bash
+codemie sdk categories list [--paginated] [--page <n>] [--per-page <n>] [--json]
+codemie sdk categories get <id> [--json]
+codemie sdk categories create --data '<json>' | --json <file>
+codemie sdk categories update <id> --data '<json>' | --json <file>
+codemie sdk categories delete <id>
+```
+
+**Required on create:** `name` (1–255 chars)
+
+**Key fields:** `id`, `name`, `description`, `marketplaceAssistantCount`, `projectAssistantCount`, `createdAt`
+
+**Important notes:**
+- `list` without `--paginated` calls the public endpoint (no admin required) — returns `id`, `name`, `description`
+- `list --paginated`, `get`, `create`, `update`, `delete` all require **admin access**
+- `delete` fails with 409 if any assistants are still assigned to the category
+- Use the category `id` in the assistant `categories` field when creating/updating assistants

@@ -40,7 +40,22 @@ export function createUsersSubcommand(): Command {
           { label: "ID", value: chalk.cyan(user.user_id) },
           { label: "Username", value: optional(user.username) },
           { label: "Name", value: optional(user.name) },
+          { label: "Email", value: optional(user.email) },
           { label: "Admin", value: user.is_admin ? chalk.green("yes") : chalk.dim("no") },
+          {
+            label: "Projects",
+            value:
+              user.applications?.length > 0
+                ? user.applications.join(", ")
+                : chalk.dim("—"),
+          },
+          {
+            label: "Admin Projects",
+            value:
+              user.applications_admin?.length > 0
+                ? user.applications_admin.join(", ")
+                : chalk.dim("—"),
+          },
         ];
 
         printDetail(rows);
