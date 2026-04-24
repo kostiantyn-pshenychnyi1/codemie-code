@@ -68,22 +68,47 @@ codemie sdk workflows create --json workflow-meta.json --config path/to/workflow
 }
 ```
 
-**`workflow.yaml` example:**
+**`workflow.yaml` example (minimal working format):**
 ```yaml
+custom_nodes: []
+tools: []
 assistants:
-  - id: processor
-    assistant_id: <assistant-id>
-    system_prompt: You are a data processing assistant
+- id: my-node
+  model: gpt-4.1
+  system_prompt: You are a helpful assistant.
+  tools: []
 states:
-  - id: start
-    assistant_id: processor
-    next:
-      state_id: end
+- id: my-node
+  assistant_id: my-node
+  task: Help the user with their request.
+  next:
+    state_id: end
+  resolve_dynamic_values_in_prompt: true
 ```
 
-Get assistant IDs to reference in YAML:
+> **Important:** Pass the YAML as an **inline string** via `--config`, not as a file path — file-based config is unreliable on some systems:
+> ```bash
+> codemie sdk workflows create \
+>   --data '{"name":"My Workflow","project":"MyProject","mode":"Sequential","shared":true}' \
+>   --config 'custom_nodes: []
+> tools: []
+> assistants:
+> - id: my-node
+>   model: gpt-4.1
+>   system_prompt: You are a helpful assistant.
+>   tools: []
+> states:
+> - id: my-node
+>   assistant_id: my-node
+>   task: Help the user with their request.
+>   next:
+>     state_id: end
+>   resolve_dynamic_values_in_prompt: true'
+> ```
+
+Get available model names:
 ```bash
-codemie sdk assistants list --projects Engineering --json | jq -r '.[] | "\(.id) \(.name)"'
+codemie sdk llm list --json | jq -r '.[] | "\(.base_name) (\(.label))"'
 ```
 
 ## Update
