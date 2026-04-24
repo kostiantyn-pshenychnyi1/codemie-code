@@ -7,12 +7,13 @@ import { createLlmModelsSubcommand } from './llm.js';
 import { createSkillsSubcommand } from './skills.js';
 import { createUsersSubcommand } from './users.js';
 import { createCategoriesSubcommand } from './categories.js';
+import { createAnalyticsSubcommand } from './analytics.js';
 
 export function createSdkCommand(): Command {
   const cmd = new Command('sdk');
 
   cmd.description(
-    'Manage CodeMie platform assets (assistants, workflows, datasources, integrations, skills, users, categories) via the SDK'
+    'Manage CodeMie platform assets (assistants, workflows, datasources, integrations, skills, users, categories, analytics) via the SDK'
   );
 
   cmd.addCommand(createAssistantsSubcommand());
@@ -23,6 +24,7 @@ export function createSdkCommand(): Command {
   cmd.addCommand(createSkillsSubcommand());
   cmd.addCommand(createUsersSubcommand());
   cmd.addCommand(createCategoriesSubcommand());
+  cmd.addCommand(createAnalyticsSubcommand());
 
   return cmd;
 }
