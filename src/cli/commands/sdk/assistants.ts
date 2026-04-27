@@ -158,16 +158,10 @@ export function createAssistantsSubcommand(): Command {
       "Create a new assistant with the specified configuration\n" +
         "Examples:\n" +
         '  $ codemie assistants create --data \'{"name":"My Assistant","description":"Helpful bot"}\'\n' +
-        '  $ codemie assistants create --json path/to/assistant.json\n',
+        "  $ codemie assistants create --json path/to/assistant.json\n",
     )
-    .option(
-      "--data <string>",
-      "Assistant configuration as inline JSON string",
-    )
-    .option(
-      "--json <path>",
-      "Path to JSON file with assistant configuration",
-    )
+    .option("--data <string>", "Assistant configuration as inline JSON string")
+    .option("--json <path>", "Path to JSON file with assistant configuration")
     .action(async (opts) => {
       const client = await getSdkClient();
       const spinner = ora("Creating assistant...").start();
@@ -196,16 +190,10 @@ export function createAssistantsSubcommand(): Command {
       "Update an existing assistant's configuration\n" +
         "Examples:\n" +
         '  $ codemie assistants update ast_abc123 --data \'{"name":"Updated Name"}\'\n' +
-        '  $ codemie assistants update ast_abc123 --json path/to/update.json\n',
+        "  $ codemie assistants update ast_abc123 --json path/to/update.json\n",
     )
-    .option(
-      "--data <string>",
-      "Fields to update as inline JSON string",
-    )
-    .option(
-      "--json <path>",
-      "Path to JSON file with fields to update",
-    )
+    .option("--data <string>", "Fields to update as inline JSON string")
+    .option("--json <path>", "Path to JSON file with fields to update")
     .action(async (id: string, opts) => {
       const client = await getSdkClient();
       const spinner = ora("Updating assistant...").start();
@@ -245,10 +233,7 @@ export function createAssistantsSubcommand(): Command {
     .command("get-tools")
     .description(
       "List available toolkits that can be assigned to an assistant\n" +
-        "Use toolkit names from this list in create/update --data toolkits field.\n" +
-        "Examples:\n" +
-        "  $ codemie sdk assistants get-tools\n" +
-        "  $ codemie sdk assistants get-tools --json",
+        "Use toolkit names from this list in create/update --data toolkits field.",
     )
     .option("--json", "Output in JSON format")
     .action(async (opts) => {

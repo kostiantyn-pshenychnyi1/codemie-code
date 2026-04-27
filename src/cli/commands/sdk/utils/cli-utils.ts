@@ -120,22 +120,17 @@ export function getResponseMessage(response: unknown): string {
 }
 
 /**
- * Parse --config flag value: YAML string or @file path
+ * Parse --config flag value: path to a YAML file
  */
 export async function parseConfigInput(
   configFlag: string | undefined,
 ): Promise<string> {
   if (!configFlag) {
     throw new Error(
-      "No config provided. Use --config 'yaml string' or --config @file.yaml",
+      "No config provided. Use --config path/to/file.yaml",
     );
   }
 
-  if (configFlag.startsWith("@")) {
-    const filePath = configFlag.slice(1);
-    const content = await readFile(filePath, "utf-8");
-    return content;
-  }
-
-  return configFlag;
+  const content = await readFile(configFlag, "utf-8");
+  return content;
 }

@@ -2,11 +2,7 @@ import { Command } from "commander";
 import chalk from "chalk";
 import ora from "ora";
 import { getUserProfile, getUserData } from "./services/users.js";
-import {
-  getSdkClient,
-  outputJson,
-  handleSdkError,
-} from "./utils/cli-utils.js";
+import { getSdkClient, outputJson, handleSdkError } from "./utils/cli-utils.js";
 import { printDetail, optional, type DetailRow } from "./utils/render.js";
 
 export function createUsersSubcommand(): Command {
@@ -16,12 +12,7 @@ export function createUsersSubcommand(): Command {
 
   cmd
     .command("me")
-    .description(
-      "Get current user profile\n" +
-        "Examples:\n" +
-        "  $ codemie sdk users me\n" +
-        "  $ codemie sdk users me --json",
-    )
+    .description("Get current user profile")
     .option("--json", "Output in JSON format")
     .action(async (opts) => {
       const client = await getSdkClient();
@@ -41,7 +32,10 @@ export function createUsersSubcommand(): Command {
           { label: "Username", value: optional(user.username) },
           { label: "Name", value: optional(user.name) },
           { label: "Email", value: optional(user.email) },
-          { label: "Admin", value: user.is_admin ? chalk.green("yes") : chalk.dim("no") },
+          {
+            label: "Admin",
+            value: user.is_admin ? chalk.green("yes") : chalk.dim("no"),
+          },
           {
             label: "Projects",
             value:
@@ -67,12 +61,7 @@ export function createUsersSubcommand(): Command {
 
   cmd
     .command("data")
-    .description(
-      "Get current user data and preferences\n" +
-        "Examples:\n" +
-        "  $ codemie sdk users data\n" +
-        "  $ codemie sdk users data --json",
-    )
+    .description("Get current user data and preferences")
     .option("--json", "Output in JSON format")
     .action(async (opts) => {
       const client = await getSdkClient();

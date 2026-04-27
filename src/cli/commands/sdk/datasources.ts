@@ -206,10 +206,7 @@ export function createDatasourcesSubcommand(): Command {
           "--data <string>",
           "Datasource metadata as inline JSON string (name, project_name, description, etc.)",
         )
-        .option(
-          "--json <path>",
-          "Path to JSON file with datasource metadata",
-        )
+        .option("--json <path>", "Path to JSON file with datasource metadata")
         .action(async (opts) => {
           const client = await getSdkClient();
           const spinner = ora("Creating file datasource...").start();
@@ -246,10 +243,12 @@ export function createDatasourcesSubcommand(): Command {
       createCmd
         .command(typeConfig.command)
         .description(
-          `Create ${typeConfig.description}\n` +
-            `Examples:\n` +
-            `  $ codemie sdk datasources create ${typeConfig.command} --data '${typeConfig.example}'\n` +
-            `  $ codemie sdk datasources create ${typeConfig.command} --json path/to/config.json`,
+          `Create ${typeConfig.description}` +
+            (typeConfig.example
+              ? `\nExamples:\n` +
+                `  $ codemie sdk datasources create ${typeConfig.command} --data '${typeConfig.example}'\n` +
+                `  $ codemie sdk datasources create ${typeConfig.command} --json path/to/config.json`
+              : ""),
         )
         .option(
           "--data <string>",
@@ -302,14 +301,8 @@ export function createDatasourcesSubcommand(): Command {
             `  $ codemie sdk datasources update file ds_123 --data '{"description":"Updated docs"}'\n` +
             `  $ codemie sdk datasources update file ds_123 --json path/to/update.json`,
         )
-        .option(
-          "--data <string>",
-          "Fields to update as inline JSON string",
-        )
-        .option(
-          "--json <path>",
-          "Path to JSON file with fields to update",
-        )
+        .option("--data <string>", "Fields to update as inline JSON string")
+        .option("--json <path>", "Path to JSON file with fields to update")
         .action(async (id: string, opts) => {
           const client = await getSdkClient();
           const spinner = ora("Updating file datasource...").start();
@@ -333,19 +326,15 @@ export function createDatasourcesSubcommand(): Command {
       updateCmd
         .command(`${typeConfig.command} <id>`)
         .description(
-          `Update ${typeConfig.description}\n` +
-            `Examples:\n` +
-            `  $ codemie sdk datasources update ${typeConfig.command} ds_123 --data '${typeConfig.example}'\n` +
-            `  $ codemie sdk datasources update ${typeConfig.command} ds_123 --json path/to/update.json`,
+          `Update ${typeConfig.description}` +
+            (typeConfig.example
+              ? `\nExamples:\n` +
+                `  $ codemie sdk datasources update ${typeConfig.command} ds_123 --data '${typeConfig.example}'\n` +
+                `  $ codemie sdk datasources update ${typeConfig.command} ds_123 --json path/to/update.json`
+              : ""),
         )
-        .option(
-          "--data <string>",
-          "Fields to update as inline JSON string",
-        )
-        .option(
-          "--json <path>",
-          "Path to JSON file with fields to update",
-        )
+        .option("--data <string>", "Fields to update as inline JSON string")
+        .option("--json <path>", "Path to JSON file with fields to update")
         .action(async (id: string, opts) => {
           const client = await getSdkClient();
           const spinner = ora(

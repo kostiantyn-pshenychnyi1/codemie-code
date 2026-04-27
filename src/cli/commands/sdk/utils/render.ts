@@ -21,6 +21,9 @@ export interface TableColumn<T> {
  */
 export function printTable<T>(items: T[], columns: TableColumn<T>[]): void {
   const table = new Table({
+    style: {
+      head: columns.map(() => "white"),
+    },
     head: columns.map((col) => chalk.bold(col.header)),
     colWidths: columns.map((col) => col.width),
     wordWrap: true,

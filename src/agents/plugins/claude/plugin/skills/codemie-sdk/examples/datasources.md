@@ -390,49 +390,6 @@ codemie sdk datasources create provider --data '{
 }'
 ```
 
-### Summary
-
-```bash
-codemie sdk datasources create summary --data '{
-  "name": "my-summary",
-  "project_name": "Team",
-  "description": "Summary datasource",
-  "shared_with_project": true
-}'
-```
-
-### Chunk Summary
-
-```bash
-codemie sdk datasources create chunk-summary --data '{
-  "name": "my-chunk-summary",
-  "project_name": "Team",
-  "description": "Chunk summary datasource",
-  "shared_with_project": true
-}'
-```
-
-### Platform
-
-```bash
-codemie sdk datasources create platform --data '{
-  "name": "platform-assistant",
-  "project_name": "Team",
-  "description": "Platform marketplace assistant",
-  "shared_with_project": true
-}'
-```
-
-**Fields for json, provider, summary, chunk-summary, platform (base fields only):**
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| `name` | ✅ | Must match `^[a-zA-Z0-9][\w-]*$` — no spaces, use hyphens |
-| `project_name` | ✅ | Project to create the datasource in |
-| `description` | — | Human-readable description |
-| `shared_with_project` | — | `true` = visible to all project members |
-| `setting_id` | — | Integration ID for authentication |
-
 ## Scripting
 
 ```bash

@@ -100,7 +100,11 @@ export function createSkillsSubcommand(): Command {
         const columns: TableColumn<SkillListItem>[] = [
           { header: "ID", width: 40, getValue: (s) => chalk.cyan(s.id) },
           { header: "Name", width: 30, getValue: (s) => s.name },
-          { header: "Project", width: 20, getValue: (s) => optional(s.project) },
+          {
+            header: "Project",
+            width: 20,
+            getValue: (s) => optional(s.project),
+          },
           { header: "Visibility", width: 12, getValue: (s) => s.visibility },
         ];
         printTable(items, columns);
@@ -257,7 +261,9 @@ export function createSkillsSubcommand(): Command {
           return;
         }
 
-        printSuccess(`Skill ${chalk.cyan(result.id)} imported as '${result.name}'.`);
+        printSuccess(
+          `Skill ${chalk.cyan(result.id)} imported as '${result.name}'.`,
+        );
       } catch (error) {
         spinner.stop();
         handleSdkError(error, "import skill");
@@ -266,12 +272,7 @@ export function createSkillsSubcommand(): Command {
 
   cmd
     .command("export <id>")
-    .description(
-      "Export a skill as markdown content\n" +
-        "Examples:\n" +
-        "  $ codemie sdk skills export <id>\n" +
-        "  $ codemie sdk skills export <id> > my-skill.md",
-    )
+    .description("Export a skill as markdown content")
     .action(async (id: string) => {
       const client = await getSdkClient();
       const spinner = ora("Exporting skill...").start();
@@ -288,11 +289,7 @@ export function createSkillsSubcommand(): Command {
 
   cmd
     .command("attach <assistant-id> <skill-id>")
-    .description(
-      "Attach a skill to an assistant\n" +
-        "Examples:\n" +
-        "  $ codemie sdk skills attach <assistant-id> <skill-id>",
-    )
+    .description("Attach a skill to an assistant")
     .action(async (assistantId: string, skillId: string) => {
       const client = await getSdkClient();
       const spinner = ora("Attaching skill to assistant...").start();
@@ -311,11 +308,7 @@ export function createSkillsSubcommand(): Command {
 
   cmd
     .command("detach <assistant-id> <skill-id>")
-    .description(
-      "Detach a skill from an assistant\n" +
-        "Examples:\n" +
-        "  $ codemie sdk skills detach <assistant-id> <skill-id>",
-    )
+    .description("Detach a skill from an assistant")
     .action(async (assistantId: string, skillId: string) => {
       const client = await getSdkClient();
       const spinner = ora("Detaching skill from assistant...").start();
@@ -334,12 +327,7 @@ export function createSkillsSubcommand(): Command {
 
   cmd
     .command("list-assistant-skills <assistant-id>")
-    .description(
-      "List all skills attached to an assistant\n" +
-        "Examples:\n" +
-        "  $ codemie sdk skills list-assistant-skills <assistant-id>\n" +
-        "  $ codemie sdk skills list-assistant-skills <assistant-id> --json",
-    )
+    .description("List all skills attached to an assistant")
     .option("--json", "Output in JSON format")
     .action(async (assistantId: string, opts) => {
       const client = await getSdkClient();
@@ -375,11 +363,7 @@ export function createSkillsSubcommand(): Command {
 
   cmd
     .command("bulk-attach <skill-id>")
-    .description(
-      "Attach a skill to multiple assistants at once\n" +
-        "Examples:\n" +
-        "  $ codemie sdk skills bulk-attach <skill-id> --assistant-ids <id1>,<id2>,<id3>",
-    )
+    .description("Attach a skill to multiple assistants at once")
     .requiredOption(
       "--assistant-ids <ids>",
       "Comma-separated list of assistant IDs",
@@ -405,12 +389,7 @@ export function createSkillsSubcommand(): Command {
 
   cmd
     .command("get-assistants <skill-id>")
-    .description(
-      "List all assistants using a skill\n" +
-        "Examples:\n" +
-        "  $ codemie sdk skills get-assistants <skill-id>\n" +
-        "  $ codemie sdk skills get-assistants <skill-id> --json",
-    )
+    .description("List all assistants using a skill")
     .option("--json", "Output in JSON format")
     .action(async (skillId: string, opts) => {
       const client = await getSdkClient();
@@ -461,12 +440,7 @@ export function createSkillsSubcommand(): Command {
 
   cmd
     .command("publish <id>")
-    .description(
-      "Publish a skill to the marketplace\n" +
-        "Examples:\n" +
-        "  $ codemie sdk skills publish <id>\n" +
-        "  $ codemie sdk skills publish <id> --categories development,testing",
-    )
+    .description("Publish a skill to the marketplace")
     .option(
       "--categories <categories>",
       "Comma-separated list of categories (max 3)",
@@ -490,11 +464,7 @@ export function createSkillsSubcommand(): Command {
 
   cmd
     .command("unpublish <id>")
-    .description(
-      "Unpublish a skill from the marketplace\n" +
-        "Examples:\n" +
-        "  $ codemie sdk skills unpublish <id>",
-    )
+    .description("Unpublish a skill from the marketplace")
     .action(async (id: string) => {
       const client = await getSdkClient();
       const spinner = ora("Unpublishing skill...").start();
@@ -511,12 +481,7 @@ export function createSkillsSubcommand(): Command {
 
   cmd
     .command("list-categories")
-    .description(
-      "List available skill categories\n" +
-        "Examples:\n" +
-        "  $ codemie sdk skills list-categories\n" +
-        "  $ codemie sdk skills list-categories --json",
-    )
+    .description("List available skill categories")
     .option("--json", "Output in JSON format")
     .action(async (opts) => {
       const client = await getSdkClient();
@@ -560,12 +525,7 @@ export function createSkillsSubcommand(): Command {
 
   cmd
     .command("get-users")
-    .description(
-      "Get users with access to skills\n" +
-        "Examples:\n" +
-        "  $ codemie sdk skills get-users\n" +
-        "  $ codemie sdk skills get-users --json",
-    )
+    .description("Get users with access to skills")
     .option("--json", "Output in JSON format")
     .action(async (opts) => {
       const client = await getSdkClient();
@@ -624,12 +584,7 @@ export function createSkillsSubcommand(): Command {
 
   cmd
     .command("react <id>")
-    .description(
-      "React to a skill with like or dislike\n" +
-        "Examples:\n" +
-        "  $ codemie sdk skills react <id> --reaction like\n" +
-        "  $ codemie sdk skills react <id> --reaction dislike",
-    )
+    .description("React to a skill with like or dislike")
     .requiredOption(
       "--reaction <reaction>",
       "Reaction type: 'like' or 'dislike'",
@@ -652,11 +607,7 @@ export function createSkillsSubcommand(): Command {
 
   cmd
     .command("remove-reactions <id>")
-    .description(
-      "Remove all reactions from a skill\n" +
-        "Examples:\n" +
-        "  $ codemie sdk skills remove-reactions <id>",
-    )
+    .description("Remove all reactions from a skill")
     .action(async (id: string) => {
       const client = await getSdkClient();
       const spinner = ora("Removing reactions...").start();

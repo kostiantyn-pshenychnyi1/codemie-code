@@ -147,8 +147,8 @@ export function createWorkflowsSubcommand(): Command {
     .description(
       "Create a new workflow with the specified configuration\n" +
         "Examples:\n" +
-        '  $ codemie workflows create --data \'{"name":"My Workflow","description":"Custom workflow"}\' --config @workflow.yaml\n' +
-        '  $ codemie workflows create --json path/to/workflow.json --config @workflow.yaml\n',
+        '  $ codemie workflows create --data \'{"name":"My Workflow","description":"Custom workflow"}\' --config workflow.yaml\n' +
+        '  $ codemie workflows create --json path/to/workflow.json --config workflow.yaml\n',
     )
     .option(
       "--data <string>",
@@ -159,8 +159,8 @@ export function createWorkflowsSubcommand(): Command {
       "Path to JSON file with workflow configuration",
     )
     .option(
-      "--config <yaml>",
-      "Workflow YAML config as string or @file.yaml path",
+      "--config <path>",
+      "Path to workflow YAML config file",
     )
     .action(async (opts) => {
       const client = await getSdkClient();
@@ -190,8 +190,8 @@ export function createWorkflowsSubcommand(): Command {
     .description(
       "Update an existing workflow's configuration\n" +
         "Examples:\n" +
-        '  $ codemie workflows update wfl_abc123 --data \'{"name":"Updated Name"}\' --config @workflow.yaml\n' +
-        '  $ codemie workflows update wfl_abc123 --json path/to/update.json --config @workflow.yaml\n',
+        '  $ codemie workflows update wfl_abc123 --data \'{"name":"Updated Name"}\' --config workflow.yaml\n' +
+        '  $ codemie workflows update wfl_abc123 --json path/to/update.json --config workflow.yaml\n',
     )
     .option(
       "--data <string>",
@@ -202,8 +202,8 @@ export function createWorkflowsSubcommand(): Command {
       "Path to JSON file with fields to update",
     )
     .option(
-      "--config <yaml>",
-      "Workflow YAML config as string or @file.yaml path",
+      "--config <path>",
+      "Path to workflow YAML config file",
     )
     .action(async (id: string, opts) => {
       const client = await getSdkClient();
