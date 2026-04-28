@@ -7,6 +7,7 @@ import type {
   AssistantListParams,
   ToolKitDetails,
 } from "codemie-sdk";
+import { ConfigurationError } from "@/utils/errors.js";
 import { listLlmModels } from "./llm.js";
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };
@@ -36,6 +37,9 @@ export async function createAssistant(
   params: Partial<AssistantCreateParams>,
 ): Promise<{ message: string; assistant_id?: string }> {
   const llmModels = await listLlmModels(client);
+  if (llmModels.length === 0) {
+    throw new ConfigurationError("No LLM models are available. Contact your administrator.");
+  }
   const defaultLlmModel =
     llmModels.find((m) => m.default)?.base_name ?? llmModels[0].base_name;
 
@@ -61,6 +65,9 @@ export async function updateAssistant(
     client.assistants.get(assistantId),
     listLlmModels(client),
   ]);
+  if (llmModels.length === 0) {
+    throw new ConfigurationError("No LLM models are available. Contact your administrator.");
+  }
   const defaultLlmModel =
     llmModels.find((m) => m.default)?.base_name ?? llmModels[0].base_name;
 

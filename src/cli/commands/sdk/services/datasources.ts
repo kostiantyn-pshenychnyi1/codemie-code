@@ -4,6 +4,8 @@ import type {
   AzureDevOpsWikiDataSourceUpdateParams,
   AzureDevOpsWorkItemDataSourceCreateParams,
   AzureDevOpsWorkItemDataSourceUpdateParams,
+  CodeDataSourceCreateParams,
+  CodeDataSourceUpdateParams,
   ConfluenceDataSourceCreateParams,
   ConfluenceDataSourceUpdateParams,
   DataSource,
@@ -11,6 +13,7 @@ import type {
   FileDataSourceCreateParams,
   FileDataSourceUpdateDto,
   GoogleDataSourceCreateParams,
+  GoogleDataSourceUpdateParams,
   JiraDataSourceCreateParams,
   JiraDataSourceUpdateParams,
   OtherDataSourceCreateParams,
@@ -63,12 +66,12 @@ export async function updateConfluenceDatasource(
 
   const params: ConfluenceDataSourceUpdateParams = {
     type: "knowledge_base_confluence",
-    cql: data.cql,
-    description: data.description,
+    cql: data.cql ?? existing.confluence?.cql,
+    description: data.description ?? existing.description,
     name: existing.name,
     project_name: data.project_name ?? existing.project_name,
-    setting_id: data.setting_id,
-    shared_with_project: data.shared_with_project,
+    setting_id: data.setting_id ?? existing.setting_id,
+    shared_with_project: data.shared_with_project ?? existing.shared_with_project,
   };
 
   return client.datasources.update(params);
@@ -120,10 +123,6 @@ export async function createFileDatasource(
   data: FileDataSourceCreateParams,
   filePaths: string[],
 ): Promise<unknown> {
-  if (!filePaths || !Array.isArray(filePaths)) {
-    throw new Error("files array is required for file datasources");
-  }
-
   const files = await readFilesFromPaths(filePaths);
 
   return client.datasources.create({
@@ -153,7 +152,7 @@ export async function updateFileDatasource(
 // CODE
 export async function createCodeDatasource(
   client: CodeMieClient,
-  data: any,
+  data: Omit<CodeDataSourceCreateParams, "type">,
 ): Promise<unknown> {
   return client.datasources.create({
     ...data,
@@ -164,11 +163,10 @@ export async function createCodeDatasource(
 export async function updateCodeDatasource(
   client: CodeMieClient,
   id: string,
-  data: any,
+  data: Partial<Omit<CodeDataSourceUpdateParams, "type">>,
 ): Promise<unknown> {
   const existing = await client.datasources.get(id);
   return client.datasources.update({
-    id,
     type: "code",
     name: existing.name,
     project_name: existing.project_name,
@@ -190,11 +188,10 @@ export async function createGoogleDatasource(
 export async function updateGoogleDatasource(
   client: CodeMieClient,
   id: string,
-  data: any,
+  data: Partial<Omit<GoogleDataSourceUpdateParams, "type">>,
 ): Promise<unknown> {
   const existing = await client.datasources.get(id);
   return client.datasources.update({
-    id,
     type: "llm_routing_google",
     name: existing.name,
     project_name: existing.project_name,

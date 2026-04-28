@@ -74,6 +74,7 @@ import { createDecipheriv, createHash } from 'crypto';
 import { readFileSync, existsSync } from 'fs';
 import { homedir, hostname, platform, arch } from 'os';
 import { join, resolve } from 'path';
+import { fileURLToPath } from 'url';
 
 // ─── Argument Parsing ────────────────────────────────────────────────────────
 
@@ -718,7 +719,7 @@ const LITELLM_COMMANDS = ['litellm-customer', 'litellm-spend', 'litellm-keys'];
 
 async function main() {
   if (!command || command === 'help') {
-    const src = readFileSync(new URL(import.meta.url).pathname, 'utf8');
+    const src = readFileSync(fileURLToPath(import.meta.url), 'utf8');
     const docBlock = src.match(/\/\*\*([\s\S]*?)\*\//)?.[0] ?? '';
     console.log(docBlock);
     process.exit(0);

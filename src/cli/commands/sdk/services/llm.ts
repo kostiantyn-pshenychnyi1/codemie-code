@@ -1,4 +1,4 @@
-import { CodeMieClient, LLMModel } from "codemie-sdk";
+import type { CodeMieClient, LLMModel } from "codemie-sdk";
 
 export async function listLlmModels(
   client: CodeMieClient,
