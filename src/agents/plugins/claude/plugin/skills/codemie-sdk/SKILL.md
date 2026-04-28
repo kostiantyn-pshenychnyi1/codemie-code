@@ -1,24 +1,24 @@
 ---
 name: codemie-sdk
 description: >-
-  Manage CodeMie platform assets (assistants, workflows, datasources, integrations, skills, users, categories, analytics) directly from CLI
+  Manage CodeMie platform assets (assistants, workflows, datasources, integrations, skills, users, categories) directly from CLI
   using CodeMie SDK. Use when user says "create assistant", "list workflows", "update datasource",
   "delete assistant", "show my assistants", "get workflow details", "manage integrations",
   "create integration", "list integrations", "list llm models", "list embedding models",
   "list skills", "get skill", "create skill", "update skill", "delete skill", "publish skill",
   "import skill", "export skill", "attach skill", "list categories", "get category",
   "create category", "delete category", "who am i", "current user", "my profile", "user info",
-  "analytics", "usage analytics", "summaries", "cli analytics", "spending", "users activity",
-  "projects activity", "assistants chats analytics", "workflows analytics", "tools usage",
-  "mcp servers analytics", "llms usage", "users spending", "budget limits",
-  or any request to manage CodeMie platform resources or view analytics.
+  or any request to manage CodeMie platform resources.
+  NOTE: For analytics requests (usage analytics, summaries, spending, users activity, leaderboards, etc.) use the codemie-analytics skill instead.
 ---
 
 # CodeMie SDK Asset Management
 
 Manage CodeMie platform assets from the CLI.
 
-**Asset Types:** `assistants`, `workflows`, `datasources`, `integrations`, `skills`, `users`, `categories`, `analytics`
+> **Analytics requests** (usage data, summaries, spending, activity, etc.) are handled by the **codemie-analytics** skill — use that instead.
+
+**Asset Types:** `assistants`, `workflows`, `datasources`, `integrations`, `skills`, `users`, `categories`
 
 **Operations:** `list`, `get`, `create`, `update`, `delete`
 
@@ -83,7 +83,6 @@ Once the project is known, use it in all subsequent commands:
 | Skills | [examples/skills.md](examples/skills.md) |
 | Users | [examples/users.md](examples/users.md) |
 | Categories | [examples/categories.md](examples/categories.md) |
-| Analytics | [examples/analytics.md](examples/analytics.md) |
 
 Do **not** guess field names or skip this step — all required/optional fields, nested schemas, and asset cross-reference commands are documented there.
 
@@ -239,57 +238,3 @@ codemie sdk categories delete <id>
 
 **Required on create:** `name` (1–255 chars)
 
----
-
-## Analytics
-
-> See [examples/analytics.md](examples/analytics.md) for full examples and scripting patterns.
-
-Analytics endpoints generally require admin access. All commands support `--json` for raw output.
-
-### Filter parameters
-
-**`--time-period <value>`** — preset time window. Mutually exclusive with `--start-date`/`--end-date`. Exact accepted values:
-`last_hour` | `last_6_hours` | `last_24_hours` | `last_7_days` | `last_30_days` | `last_60_days` | `last_year`
-
-**`--start-date <datetime>`** / **`--end-date <datetime>`** — custom date range. Mutually exclusive with `--time-period`. Format: ISO 8601 UTC string `"YYYY-MM-DDTHH:MM:SSZ"`. Rules:
-- `start_date` must be before `end_date`; `end_date` must not be in the future
-- If neither time filter is provided, the backend defaults to **last 30 days**
-
-**`--users <value>`** — comma-separated user IDs. Get valid IDs via `codemie sdk analytics users --json`. Non-admin users can only filter by themselves.
-
-**`--projects <value>`** — comma-separated project names (not UUIDs). Projects the caller cannot access are silently ignored.
-
-**`--page <n>`** / **`--per-page <n>`** — zero-indexed page (default `0`), items per page `1–1000` (default `20`). Tabular endpoints only.
-
-### Commands
-
-```bash
-# Summaries (SummariesResponse: data.metrics[])
-codemie sdk analytics summaries    [filters] [--json]
-codemie sdk analytics cli-summary  [filters] [--json]
-
-# Users list (UsersListResponse: data.users[], data.total_count)
-codemie sdk analytics users        [filters] [--json]
-
-# Tabular endpoints (TabularResponse: data.columns[], data.rows[], pagination)
-codemie sdk analytics assistants-chats     [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics workflows            [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics tools-usage          [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics webhooks-invocation  [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics mcp-servers          [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics mcp-servers-by-users [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics projects-spending    [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics llms-usage           [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics users-spending       [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics budget-soft-limit    [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics budget-hard-limit    [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics users-activity       [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics projects-activity    [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics agents-usage         [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics cli-agents           [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics cli-llms             [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics cli-users            [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics cli-errors           [filters] [--page <n>] [--per-page <n>] [--json]
-codemie sdk analytics cli-repositories     [filters] [--page <n>] [--per-page <n>] [--json]
-```
