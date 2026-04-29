@@ -6,12 +6,12 @@
 
 ```bash
 # List all categories (public, no admin required)
-codemie sdk categories list
-codemie sdk categories list --json
+codemie sdk assistant-categories list
+codemie sdk assistant-categories list --json
 
 # Paginated list with assistant counts (admin required)
-codemie sdk categories list --paginated
-codemie sdk categories list --paginated --page 0 --per-page 25 --json
+codemie sdk assistant-categories list --paginated
+codemie sdk assistant-categories list --paginated --page 0 --per-page 25 --json
 ```
 
 **Non-paginated JSON fields:** `id`, `name`, `description`
@@ -21,8 +21,8 @@ codemie sdk categories list --paginated --page 0 --per-page 25 --json
 ## Get
 
 ```bash
-codemie sdk categories get <id>
-codemie sdk categories get <id> --json
+codemie sdk assistant-categories get <id>
+codemie sdk assistant-categories get <id> --json
 ```
 
 Admin access required. Returns `id`, `name`, `description`, `marketplaceAssistantCount`, `projectAssistantCount`, `createdAt`, `updatedAt`.
@@ -31,13 +31,13 @@ Admin access required. Returns `id`, `name`, `description`, `marketplaceAssistan
 
 ```bash
 # Minimal (name only)
-codemie sdk categories create --data '{"name":"DevOps"}'
+codemie sdk assistant-categories create --data '{"name":"DevOps"}'
 
 # With description
-codemie sdk categories create --data '{"name":"Code Review","description":"Skills for reviewing code quality and security"}'
+codemie sdk assistant-categories create --data '{"name":"Code Review","description":"Skills for reviewing code quality and security"}'
 
 # From file
-codemie sdk categories create --json category.json
+codemie sdk assistant-categories create --json category.json
 ```
 
 **Field reference:**
@@ -52,8 +52,8 @@ Admin access required.
 ## Update
 
 ```bash
-codemie sdk categories update <id> --data '{"name":"Updated Name"}'
-codemie sdk categories update <id> --data '{"name":"DevOps","description":"Updated description"}'
+codemie sdk assistant-categories update <id> --data '{"name":"Updated Name"}'
+codemie sdk assistant-categories update <id> --data '{"name":"DevOps","description":"Updated description"}'
 ```
 
 Admin access required.
@@ -62,8 +62,8 @@ Admin access required.
 
 ```bash
 # Verify before deleting
-codemie sdk categories get <id>
-codemie sdk categories delete <id>
+codemie sdk assistant-categories get <id>
+codemie sdk assistant-categories delete <id>
 ```
 
 Admin access required. Fails with **409** if any assistants are still assigned to this category — reassign or remove those assistants first.
@@ -74,7 +74,7 @@ Categories are referenced by their `id` in the assistant `categories` field.
 
 ```bash
 # Get available category IDs
-codemie sdk categories list --json | jq -r '.[] | "\(.id) \(.name)"'
+codemie sdk assistant-categories list --json | jq -r '.[] | "\(.id) \(.name)"'
 
 # Create an assistant with categories
 codemie sdk assistants create --data '{
@@ -94,8 +94,8 @@ codemie sdk assistants update <assistant-id> --data '{
 
 ```bash
 # Find category ID by name
-codemie sdk categories list --json | jq -r '.[] | select(.name == "DevOps") | .id'
+codemie sdk assistant-categories list --json | jq -r '.[] | select(.name == "DevOps") | .id'
 
 # List all categories with assistant counts (admin)
-codemie sdk categories list --paginated --json | jq -r '.categories[] | "\(.name): \(.marketplaceAssistantCount) marketplace, \(.projectAssistantCount) project"'
+codemie sdk assistant-categories list --paginated --json | jq -r '.categories[] | "\(.name): \(.marketplaceAssistantCount) marketplace, \(.projectAssistantCount) project"'
 ```

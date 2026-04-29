@@ -33,7 +33,7 @@ import {
 } from "./utils/render.js";
 
 export function createCategoriesSubcommand(): Command {
-  const cmd = new Command("categories").description(
+  const cmd = new Command("assistant-categories").description(
     "Manage CodeMie assistant categories",
   );
 
@@ -44,9 +44,9 @@ export function createCategoriesSubcommand(): Command {
         "Without --paginated: returns all categories (public, no admin required).\n" +
         "With --paginated: returns paginated list with assistant counts (admin required).\n" +
         "Examples:\n" +
-        "  $ codemie sdk categories list\n" +
-        "  $ codemie sdk categories list --paginated --page 0 --per-page 25\n" +
-        "  $ codemie sdk categories list --json",
+        "  $ codemie sdk assistant-categories list\n" +
+        "  $ codemie sdk assistant-categories list --paginated --page 0 --per-page 25\n" +
+        "  $ codemie sdk assistant-categories list --json",
     )
     .option("--json", "Output in JSON format")
     .option("--paginated", "Use paginated endpoint with assistant counts (admin required)")
@@ -130,8 +130,8 @@ export function createCategoriesSubcommand(): Command {
     .description(
       "Get a specific category by ID (admin required)\n" +
         "Examples:\n" +
-        "  $ codemie sdk categories get <id>\n" +
-        "  $ codemie sdk categories get <id> --json",
+        "  $ codemie sdk assistant-categories get <id>\n" +
+        "  $ codemie sdk assistant-categories get <id> --json",
     )
     .option("--json", "Output in JSON format")
     .action(async (id: string, opts) => {
@@ -175,8 +175,8 @@ export function createCategoriesSubcommand(): Command {
     .description(
       "Create a new assistant category (admin required)\n" +
         "Examples:\n" +
-        '  $ codemie sdk categories create --data \'{"name":"DevOps","description":"DevOps tooling and automation"}\'\n' +
-        "  $ codemie sdk categories create --json path/to/category.json",
+        '  $ codemie sdk assistant-categories create --data \'{"name":"DevOps","description":"DevOps tooling and automation"}\'\n' +
+        "  $ codemie sdk assistant-categories create --json path/to/category.json",
     )
     .option("--data <string>", "Category data as inline JSON string")
     .option("--json <path>", "Path to JSON file with category data")
@@ -204,8 +204,8 @@ export function createCategoriesSubcommand(): Command {
     .description(
       "Update an existing assistant category (admin required)\n" +
         "Examples:\n" +
-        '  $ codemie sdk categories update <id> --data \'{"name":"Updated Name"}\'\n' +
-        "  $ codemie sdk categories update <id> --json path/to/update.json",
+        '  $ codemie sdk assistant-categories update <id> --data \'{"name":"Updated Name"}\'\n' +
+        "  $ codemie sdk assistant-categories update <id> --json path/to/update.json",
     )
     .option("--data <string>", "Fields to update as inline JSON string")
     .option("--json <path>", "Path to JSON file with fields to update")
@@ -235,7 +235,7 @@ export function createCategoriesSubcommand(): Command {
       "Delete an assistant category (admin required).\n" +
         "Fails with 409 if any assistants are assigned to it.\n" +
         "Examples:\n" +
-        "  $ codemie sdk categories delete <id>",
+        "  $ codemie sdk assistant-categories delete <id>",
     )
     .action(async (id: string) => {
       const client = await getSdkClient();

@@ -1,13 +1,13 @@
 ---
 name: codemie-sdk
 description: >-
-  Manage CodeMie platform assets (assistants, workflows, datasources, integrations, skills, users, categories) directly from CLI
+  Manage CodeMie platform assets (assistants, workflows, datasources, integrations, skills, users, assistant-categories) directly from CLI
   using CodeMie SDK. Use when user says "create assistant", "list workflows", "update datasource",
   "delete assistant", "show my assistants", "get workflow details", "manage integrations",
   "create integration", "list integrations", "list llm models", "list embedding models",
   "list skills", "get skill", "create skill", "update skill", "delete skill", "publish skill",
-  "import skill", "export skill", "attach skill", "list categories", "get category",
-  "create category", "delete category", "who am i", "current user", "my profile", "user info",
+  "import skill", "export skill", "attach skill", "list assistant categories", "get assistant category",
+  "create assistant category", "delete assistant category", "who am i", "current user", "my profile", "user info",
   or any request to manage CodeMie platform resources.
   NOTE: For analytics requests (usage analytics, summaries, spending, users activity, leaderboards, etc.) use the codemie-analytics skill instead.
 ---
@@ -18,7 +18,7 @@ Manage CodeMie platform assets from the CLI.
 
 > **Analytics requests** (usage data, summaries, spending, activity, etc.) are handled by the **codemie-analytics** skill — use that instead.
 
-**Asset Types:** `assistants`, `workflows`, `datasources`, `integrations`, `skills`, `users`, `categories`
+**Asset Types:** `assistants`, `workflows`, `datasources`, `integrations`, `skills`, `users`, `assistant-categories`
 
 **Operations:** `list`, `get`, `create`, `update`, `delete`
 
@@ -65,7 +65,7 @@ Only select a project automatically if the user has explicitly named it, or used
 ### Step 4 — Proceed
 
 Once the project is known, use it in all subsequent commands:
-- Assistants, skills, categories: `"project": "<name>"`
+- Assistants, skills, assistant-categories: `"project": "<name>"`
 - Workflows, datasources, integrations: `"project_name": "<name>"`
 
 ---
@@ -82,7 +82,7 @@ Once the project is known, use it in all subsequent commands:
 | Integrations | [examples/integrations.md](examples/integrations.md) |
 | Skills | [examples/skills.md](examples/skills.md) |
 | Users | [examples/users.md](examples/users.md) |
-| Categories | [examples/categories.md](examples/categories.md) |
+| Assistant Categories | [examples/categories.md](examples/categories.md) |
 
 Do **not** guess field names or skip this step — all required/optional fields, nested schemas, and asset cross-reference commands are documented there.
 
@@ -222,18 +222,18 @@ codemie sdk users data [--json]
 
 ---
 
-## Categories
+## Assistant Categories
 
 > See [examples/categories.md](examples/categories.md) for full field reference and examples.
 
 **Note:** Categories can only be used for assistants (set via the `categories` field on create/update).
 
 ```bash
-codemie sdk categories list [--paginated] [--page <n>] [--per-page <n>] [--json]
-codemie sdk categories get <id> [--json]
-codemie sdk categories create --data '<json>' | --json <file>
-codemie sdk categories update <id> --data '<json>' | --json <file>
-codemie sdk categories delete <id>
+codemie sdk assistant-categories list [--paginated] [--page <n>] [--per-page <n>] [--json]
+codemie sdk assistant-categories get <id> [--json]
+codemie sdk assistant-categories create --data '<json>' | --json <file>
+codemie sdk assistant-categories update <id> --data '<json>' | --json <file>
+codemie sdk assistant-categories delete <id>
 ```
 
 **Required on create:** `name` (1–255 chars)

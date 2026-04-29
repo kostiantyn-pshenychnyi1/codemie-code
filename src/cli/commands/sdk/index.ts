@@ -12,7 +12,7 @@ export function createSdkCommand(): Command {
   const cmd = new Command('sdk');
 
   cmd.description(
-    'Manage CodeMie platform assets (assistants, workflows, datasources, integrations, skills, users, categories) via the SDK'
+    'Manage CodeMie platform assets (assistants, workflows, datasources, integrations, skills, users, assistant-categories) via the SDK'
   );
 
   cmd.addCommand(createAssistantsSubcommand());
