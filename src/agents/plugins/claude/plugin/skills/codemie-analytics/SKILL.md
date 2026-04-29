@@ -109,7 +109,7 @@ authentication internally. If something is wrong with credentials, it prints a c
 actionable message to stderr; pass that along to the user verbatim.
 
 ```bash
-node ~/.claude/skills/codemie-analytics/scripts/analytics-cli.js <command> [options]
+node ${CLAUDE_PLUGIN_ROOT}/skills/codemie-analytics/scripts/analytics-cli.js <command> [options]
 ```
 
 LiteLLM commands (`litellm-*`, `enrich-csv`) require `LITELLM_URL` + `LITELLM_KEY` env vars.
@@ -144,7 +144,7 @@ LiteLLM commands (`litellm-*`, `enrich-csv`) require `LITELLM_URL` + `LITELLM_KE
 ### Example invocations
 
 ```bash
-CLI=~/.claude/skills/codemie-analytics/scripts/analytics-cli.js
+CLI=${CLAUDE_PLUGIN_ROOT}/skills/codemie-analytics/scripts/analytics-cli.js
 
 # Full leaderboard — top 50 pioneers sorted by score
 node $CLI leaderboard --tier pioneer --sort-by total_score --sort-order desc --per-page 50 --pretty
@@ -403,7 +403,7 @@ platform users to EPAM people, or look up user assignments/org details.
 Before proceeding, verify the assistant is accessible:
 
 ```bash
-node ~/.claude/skills/codemie-analytics/scripts/analytics-cli.js \
+node ${CLAUDE_PLUGIN_ROOT}/skills/codemie-analytics/scripts/analytics-cli.js \
   custom /v1/assistants/5ca384d0-d042-480c-a0a9-d28150e2352f 2>&1 | head -5
 ```
 
@@ -452,7 +452,7 @@ If the command returns an auth error, HTTP 401/403/404, or "No CodeMie credentia
 
 **Key commands:**
 ```bash
-CLI=~/.claude/skills/codemie-analytics/scripts/analytics-cli.js
+CLI=${CLAUDE_PLUGIN_ROOT}/skills/codemie-analytics/scripts/analytics-cli.js
 
 # Leaderboard (run in a loop for all pages)
 node $CLI leaderboard --per-page 500 --page <N> --output json
