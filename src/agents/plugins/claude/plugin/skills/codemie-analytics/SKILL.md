@@ -71,9 +71,21 @@ Leaderboard filters: `--view` (current/monthly/quarterly), `--season-key` (2026-
 | Overall usage summary (tokens, cost, users) | `summaries` | `data` — total_cost, total_tokens, total_requests, unique_users (MAU), unique_users_daily (DAU), cli_invocations, assistants_count, workflows_count, skills_count, mcp_servers_count |
 | User list + activity trends | `users` | `data.rows[]` — user_name, email, total_cost, total_tokens, last_active; plus `activity[]` time-series |
 | Per-project spending | `projects-spending` | `data.rows[]` — project_name, total_cost, total_tokens, user_count, request_count |
+| Per-project activity time-series | `projects-activity` | Composite with `activity.data.rows[]` and `uniqueDaily.data.rows[]` |
 | LLM model breakdown | `llms-usage` | `data.rows[]` — model_name, request_count, total_tokens, input_tokens, output_tokens, total_cost |
 | Tool usage | `tools-usage` | `data.rows[]` — tool_name, invocation_count, success_count, error_count, total_tokens |
 | Workflow execution analytics | `workflows` | `data.rows[]` — workflow_name, run_count, success_count, failure_count, avg_duration_ms, total_cost |
+| Agent execution analytics | `agents-usage` | `data.rows[]` — assistant_name, execution_count, total_cost, total_tokens |
+| Embedding model usage | `embeddings-usage` | `data.rows[]` — model_name, request_count, total_tokens, total_cost |
+| Chat assistant conversations | `assistants-chats` | `data.rows[]` — assistant, conversation_count, user_count, total_cost |
+| Webhook invocation analytics | `webhooks-usage` | `data.rows[]` — user_id, invocation_count, total_cost |
+| MCP server usage | `mcp-servers` | `data.rows[]` — mcp_name, request_count, user_count, total_cost |
+| MCP server usage by user | `mcp-servers-by-users` | `data.rows[]` — user_name, mcp_name, request_count |
+| Power user analytics | `power-users` | `data.rows[]` — user_email, session_count, total_cost, features_used |
+| Knowledge sharing metrics | `knowledge-sharing` | `data.rows[]` — user_email, shared_count, viewed_count |
+| Top agents by usage | `top-agents` | `data.rows[]` — assistant_name, execution_count, total_cost |
+| Top workflows by usage | `top-workflows` | `data.rows[]` — workflow_name, run_count, total_cost |
+| Assets published to marketplace | `marketplace` | `data.rows[]` — user_email, asset_name, published_at |
 | Budget alerts (soft + hard limits) | `budget` | Composite with `soft.data.rows[]` and `hard.data.rows[]` — user_email, max_spent (users approaching or over limit) |
 | Personal spending & budget | `spending` | `data` — current_spend, budget_limit, hard_budget_limit, budget_reset_at, percentage_used |
 | Per-user spending (platform + cli split) | `spending-by-users` | Composite with `platform.data.rows[]` and `cli.data.rows[]` — user_name/email, total_cost, token_count |
@@ -87,7 +99,7 @@ Leaderboard filters: `--view` (current/monthly/quarterly), `--season-key` (2026-
 | LiteLLM spend logs | `litellm-spend` | Spend entries |
 | LiteLLM virtual keys | `litellm-keys` | Key info |
 | Enrich CSV/Excel with LiteLLM costs | `enrich-csv <file>` | Enriched table |
-| Any custom endpoint | `custom /v1/analytics/<path>` | Raw JSON |
+| Unlisted / experimental endpoint | `custom /v1/analytics/<path>` | Raw JSON — use a named command if one exists |
 
 ---
 

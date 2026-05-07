@@ -34,9 +34,21 @@
  *   cli-insights-patterns          Weekday + hourly + session-depth usage patterns
  *   users                          List users + activity
  *   projects-spending              Per-project spending
+ *   projects-activity              Per-project activity time-series
  *   llms-usage                     LLM model usage breakdown
  *   tools-usage                    Tool usage analytics
  *   workflows                      Workflow execution analytics
+ *   agents-usage                   Agent execution analytics
+ *   embeddings-usage               Embedding model usage
+ *   assistants-chats               Chat assistant conversations
+ *   webhooks-usage                 Webhook invocation analytics
+ *   mcp-servers                    MCP server usage
+ *   mcp-servers-by-users           MCP server usage broken down by user
+ *   power-users                    Power user analytics
+ *   knowledge-sharing              Knowledge sharing metrics
+ *   top-agents                     Top agents by usage
+ *   top-workflows                  Top workflows by usage
+ *   marketplace                    Assets published to marketplace
  *   budget                         Budget limits (soft + hard)
  *   spending                       Current user spending & budget (personal)
  *   spending-by-users              Per-user spending breakdown (platform + cli)
@@ -44,7 +56,7 @@
  *   litellm-customer [user_id]     LiteLLM customer/info (needs LITELLM_URL + LITELLM_KEY)
  *   litellm-spend                  LiteLLM /spend/logs (needs LITELLM_URL + LITELLM_KEY)
  *   litellm-keys                   LiteLLM /key/info for all virtual keys
- *   custom <path>                  Call any analytics endpoint: e.g. custom /v1/analytics/mcp-servers
+ *   custom <path>                  Fallback for unlisted endpoints — prefer a named command if one exists
  *   enrich-csv <file>              Read CSV/Excel, lookup each user in LiteLLM, output enriched data
  *
  * Filters (most commands):
@@ -645,11 +657,78 @@ async function cmdEngagement(auth) {
   output(data);
 }
 
+async function cmdProjectsActivity(auth) {
+  const [activity, uniqueDaily] = await Promise.all([
+    analyticsGet(auth, '/v1/analytics/projects-activity', opts),
+    analyticsGet(auth, '/v1/analytics/projects-unique-daily', opts).catch(() => null),
+  ]);
+  output({ activity, uniqueDaily });
+}
+
+async function cmdAgentsUsage(auth) {
+  const data = await analyticsGet(auth, '/v1/analytics/agents-usage', opts);
+  output(data);
+}
+
+async function cmdEmbeddingsUsage(auth) {
+  const data = await analyticsGet(auth, '/v1/analytics/embeddings-usage', opts);
+  output(data);
+}
+
+async function cmdAssistantsChats(auth) {
+  const data = await analyticsGet(auth, '/v1/analytics/assistants-chats', opts);
+  output(data);
+}
+
+async function cmdWebhooksUsage(auth) {
+  const data = await analyticsGet(auth, '/v1/analytics/webhooks-invocation', opts);
+  output(data);
+}
+
+async function cmdMcpServers(auth) {
+  const data = await analyticsGet(auth, '/v1/analytics/mcp-servers', opts);
+  output(data);
+}
+
+async function cmdMcpServersByUsers(auth) {
+  const data = await analyticsGet(auth, '/v1/analytics/mcp-servers-by-users', opts);
+  output(data);
+}
+
+async function cmdPowerUsers(auth) {
+  const data = await analyticsGet(auth, '/v1/analytics/power-users', opts);
+  output(data);
+}
+
+async function cmdKnowledgeSharing(auth) {
+  const data = await analyticsGet(auth, '/v1/analytics/knowledge-sharing', opts);
+  output(data);
+}
+
+async function cmdTopAgents(auth) {
+  const data = await analyticsGet(auth, '/v1/analytics/top-agents-usage', opts);
+  output(data);
+}
+
+async function cmdTopWorkflows(auth) {
+  const data = await analyticsGet(auth, '/v1/analytics/top-workflow-usage', opts);
+  output(data);
+}
+
+async function cmdMarketplace(auth) {
+  const data = await analyticsGet(auth, '/v1/analytics/published-to-marketplace', opts);
+  output(data);
+}
+
 // --- Custom ---
 
 async function cmdCustom(auth) {
   const path = opts._[0];
-  if (!path) throw new Error('Usage: custom <endpoint-path>  e.g. custom /v1/analytics/mcp-servers');
+  if (!path) throw new Error(
+    'Usage: custom <endpoint-path>\n' +
+    'NOTE: prefer a named command over custom when one exists (run with "help" to list them).\n' +
+    'Example: custom /v1/analytics/some-new-endpoint'
+  );
   const method = (opts.method || 'GET').toUpperCase();
   let data;
   if (method === 'POST') {
@@ -780,15 +859,27 @@ async function main() {
     // Standard analytics
     case 'users':                  return cmdUsers(auth);
     case 'projects-spending':      return cmdProjectsSpending(auth);
+    case 'projects-activity':      return cmdProjectsActivity(auth);
     case 'llms-usage':             return cmdLlmsUsage(auth);
     case 'tools-usage':            return cmdToolsUsage(auth);
     case 'workflows':              return cmdWorkflows(auth);
+    case 'agents-usage':           return cmdAgentsUsage(auth);
+    case 'embeddings-usage':       return cmdEmbeddingsUsage(auth);
+    case 'assistants-chats':       return cmdAssistantsChats(auth);
+    case 'webhooks-usage':         return cmdWebhooksUsage(auth);
+    case 'mcp-servers':            return cmdMcpServers(auth);
+    case 'mcp-servers-by-users':   return cmdMcpServersByUsers(auth);
+    case 'power-users':            return cmdPowerUsers(auth);
+    case 'knowledge-sharing':      return cmdKnowledgeSharing(auth);
+    case 'top-agents':             return cmdTopAgents(auth);
+    case 'top-workflows':          return cmdTopWorkflows(auth);
+    case 'marketplace':            return cmdMarketplace(auth);
     case 'budget':                 return cmdBudget(auth);
     case 'spending':               return cmdSpending(auth);
     case 'spending-by-users':      return cmdSpendingByUsers(auth);
     case 'engagement':             return cmdEngagement(auth);
 
-    // Custom
+    // Custom — use only for endpoints without a dedicated command
     case 'custom':                 return cmdCustom(auth);
 
     default:
