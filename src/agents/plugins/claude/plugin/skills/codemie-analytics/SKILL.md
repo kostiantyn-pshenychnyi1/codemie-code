@@ -38,46 +38,46 @@ The leaderboard ranks users across **6 scoring dimensions**:
 
 **Tiers**: pioneer (80+), expert (65+), advanced (45+), practitioner (25+), newcomer (<25)
 
-| Scenario | Command | Output |
-|----------|---------|--------|
-| Full leaderboard (paginated, filterable) | `leaderboard` | Ranked entries with score, tier, dimensions |
-| Leaderboard KPI summary | `leaderboard-summary` | Total users, tier counts, top score |
-| Single user champion profile | `leaderboard-user <id\|email>` | Full dimension breakdown for one user |
-| Tier distribution | `leaderboard-tiers` | Tier name, user count, % |
-| Average dimension scores | `leaderboard-dimensions` | D1–D6 averages across all users |
-| Top N performers | `leaderboard-top [limit]` | Top users by total score (default 10) |
-| Score histogram | `leaderboard-scores` | Score distribution in 10-point bins |
-| Framework metadata | `leaderboard-framework` | Dimension descriptions, tier defs, scoring rules |
-| Computation snapshots | `leaderboard-snapshots` | List of snapshot runs |
-| Available seasons | `leaderboard-seasons --view monthly\|quarterly` | Seasonal periods for selectors |
+| Scenario | Command | What it retrieves |
+|----------|---------|-------------------|
+| Full leaderboard (paginated, filterable) | `leaderboard` | `data.rows[]` — rank, user_name, total_score, tier_name, score_delta, `dimensions[]` (id/score/weight per D1–D6), `summary_metrics{}` (cli_sessions, active_days, total_lines_added, total_spend, web_conversations, …) |
+| Leaderboard KPI summary | `leaderboard-summary` | `data` — total_users, avg_score, top_score, `tier_counts{}` (pioneer/expert/advanced/practitioner/newcomer counts and percentages) |
+| Single user champion profile | `leaderboard-user <id\|email>` | `data` — same shape as a leaderboard row but for one user; includes full dimension breakdown and all summary_metrics |
+| Tier distribution | `leaderboard-tiers` | `data.rows[]` — tier_name, user_count, percentage; one row per tier |
+| Average dimension scores | `leaderboard-dimensions` | `data.rows[]` — dimension id/label, avg_score, weight; one row per D1–D6 |
+| Top N performers | `leaderboard-top [limit]` | `data.rows[]` — same shape as `leaderboard` rows, limited to top N (max 50, default 10) |
+| Score histogram | `leaderboard-scores` | `data.rows[]` — score_range (e.g. "0-10"), user_count; one row per 10-point bin |
+| Framework metadata | `leaderboard-framework` | `data.framework{}` — title, principles, calculation_steps; `data.tiers[]` — name, label, min_score; `data.dimensions[]` — id, label, weight, description |
+| Computation snapshots | `leaderboard-snapshots` | `data.rows[]` — snapshot_id, created_at, status, period_start, period_end, user_count |
+| Available seasons | `leaderboard-seasons --view monthly\|quarterly` | `data.rows[]` — season_key (e.g. "2026-03"), label, start_date, end_date |
 
 Leaderboard filters: `--view` (current/monthly/quarterly), `--season-key` (2026-03, 2026-Q1),
 `--tier`, `--intent` (cli_focused/platform_focused/hybrid/sdlc_unicorn), `--search`, `--sort-by`, `--sort-order`.
 
 ### CLI Insights
 
-| Scenario | Command | Output |
-|----------|---------|--------|
-| Full CLI overview (agents, repos, tools, errors) | `cli-insights` | Multi-section JSON |
-| User classification & top spenders | `cli-insights-users` | Classification + spend tables |
-| Detailed single-user CLI profile | `cli-insights-user <name>` | Key metrics, tools, models, repos, categories |
-| Project classification & top by cost | `cli-insights-projects` | Project-level breakdown |
-| Usage patterns (weekday, hourly, session depth) | `cli-insights-patterns` | Temporal pattern data |
+| Scenario | Command | What it retrieves |
+|----------|---------|-------------------|
+| Full CLI overview (agents, repos, tools, errors) | `cli-insights` | Composite object with sub-keys: `summary` (total sessions, cost, tokens, repos, users), `agents[]` (agent name + session count), `top_users[]`, `top_repos[]`, `errors[]`, `llms[]` |
+| User classification & top spenders | `cli-insights-users` | `data.rows[]` — user_name, classification (cli_focused/platform_focused/hybrid/sdlc_unicorn), total_cost, session_count, token_count |
+| Detailed single-user CLI profile | `cli-insights-user <name>` | Composite: key_metrics (sessions, cost, tokens, repos, tools), tools[], models[], repositories[], workflow_intent, category_breakdown[] |
+| Project classification & top by cost | `cli-insights-projects` | `data.rows[]` — project_name, classification, total_cost, session_count, user_count |
+| Usage patterns (weekday, hourly, session depth) | `cli-insights-patterns` | Composite with sub-keys: `weekday.data.rows[]` (weekday_name, session_count), `hourly.data.rows[]` (hour_utc, session_count), `session_depth.data.rows[]` (depth_bucket, count) |
 
 ### General Analytics
 
-| Scenario | Command | Output |
-|----------|---------|--------|
-| Overall usage summary (tokens, cost, users) | `summaries` | KPI totals |
-| User list + activity trends | `users` | Users + time-series |
-| Per-project spending | `projects-spending` | Table |
-| LLM model breakdown | `llms-usage` | Table |
-| Tool usage | `tools-usage` | Table |
-| Workflow execution analytics | `workflows` | Table |
-| Budget alerts (soft + hard limits) | `budget` | Warning tables |
-| Personal spending & budget | `spending` | Current user's spend + budget usage |
-| Per-user spending (platform + cli split) | `spending-by-users` | Breakdown tables |
-| Weekly engagement histogram | `engagement` | 3h-interval heatmap data |
+| Scenario | Command | What it retrieves |
+|----------|---------|-------------------|
+| Overall usage summary (tokens, cost, users) | `summaries` | `data` — total_cost, total_tokens, total_requests, unique_users (MAU), unique_users_daily (DAU), cli_invocations, assistants_count, workflows_count, skills_count, mcp_servers_count |
+| User list + activity trends | `users` | `data.rows[]` — user_name, email, total_cost, total_tokens, last_active; plus `activity[]` time-series |
+| Per-project spending | `projects-spending` | `data.rows[]` — project_name, total_cost, total_tokens, user_count, request_count |
+| LLM model breakdown | `llms-usage` | `data.rows[]` — model_name, request_count, total_tokens, input_tokens, output_tokens, total_cost |
+| Tool usage | `tools-usage` | `data.rows[]` — tool_name, invocation_count, success_count, error_count, total_tokens |
+| Workflow execution analytics | `workflows` | `data.rows[]` — workflow_name, run_count, success_count, failure_count, avg_duration_ms, total_cost |
+| Budget alerts (soft + hard limits) | `budget` | Composite with `soft.data.rows[]` and `hard.data.rows[]` — user_email, max_spent (users approaching or over limit) |
+| Personal spending & budget | `spending` | `data` — current_spend, budget_limit, hard_budget_limit, budget_reset_at, percentage_used |
+| Per-user spending (platform + cli split) | `spending-by-users` | Composite with `platform.data.rows[]` and `cli.data.rows[]` — user_name/email, total_cost, token_count |
+| Weekly engagement histogram | `engagement` | `data.rows[]` — day_label, hour_start, feature_type, session_count, cost; covers last 7 days in 3-hour intervals |
 
 ### LiteLLM & CSV Enrichment
 
@@ -114,6 +114,62 @@ node ${CLAUDE_PLUGIN_ROOT}/skills/codemie-analytics/scripts/analytics-cli.js <co
 
 LiteLLM commands (`litellm-*`, `enrich-csv`) require `LITELLM_URL` + `LITELLM_KEY` env vars.
 
+### Collecting data for reports (batch pattern)
+
+**Only fetch the data the report actually needs.** Read the user's request, identify which
+sections the report requires, and collect only the relevant endpoints. Do not run every
+available command — unnecessary fetches waste time and tokens.
+
+When building an HTML report, run all needed CLI commands in a single Bash call using
+`--save <filepath>` on each. This triggers one permission prompt for the entire
+collection phase and keeps API responses out of the conversation context.
+
+### Directory layout
+
+Every report lives in its own folder under `reports/`. Derive the folder name from the
+current date and a short kebab-case description of the report:
+
+```
+reports/
+  2026-05-07-cli-usage/          ← report folder (date + name)
+    cli-usage.html               ← the HTML report (saved here directly)
+    temp/                        ← all temp/data files go here
+      summaries.json
+      summaries.schema.json
+      cli-insights.json
+      ...
+```
+
+**Never overwrite an existing report folder.** Always resolve a free name before creating
+anything. Use a suffix loop — this is mandatory, not optional:
+
+```bash
+BASE=reports/$(date +%Y-%m-%d)-<short-name>
+REPORT_DIR=$BASE
+n=2
+while [ -d "$REPORT_DIR" ]; do REPORT_DIR="${BASE}-${n}"; n=$((n+1)); done
+OUT="$REPORT_DIR/temp"
+```
+
+Then run only the commands the report needs:
+
+```bash
+CLI=${CLAUDE_PLUGIN_ROOT}/skills/codemie-analytics/scripts/analytics-cli.js
+mkdir -p "$OUT" && \
+node $CLI summaries   --save "$OUT/summaries.json"   && \
+node $CLI cli-insights --save "$OUT/cli-insights.json" && \
+# ... only endpoints needed for this report ...
+echo "✓ All data saved → $OUT"
+```
+
+Each command prints: `✓ Saved → <path>`. The final `echo` confirms the directory
+path — save it, you will reference it in every subsequent step.
+
+**Do not `cat`, `Read`, or print the saved JSON files into the conversation.**
+Raw API responses can be hundreds of KB. Use Step 2.5 to inspect structure instead.
+
+Temp files are not cleaned up automatically.
+
 ### Common filter flags
 
 | Flag | Example | Notes |
@@ -121,7 +177,7 @@ LiteLLM commands (`litellm-*`, `enrich-csv`) require `LITELLM_URL` + `LITELLM_KE
 | `--time-period` | `last_30_days` | Predefined period |
 | `--start-date` | `2024-01-01T00:00:00` | Custom range start |
 | `--end-date` | `2024-03-31T23:59:59` | Custom range end |
-| `--users` | `john.doe,jane.smith` | Comma-separated usernames |
+| `--users` | `alice,bob` | Comma-separated usernames |
 | `--projects` | `my-project` | Comma-separated project names |
 | `--page` | `1` | Pagination |
 | `--per-page` | `100` | Results per page (default 50) |
@@ -150,7 +206,7 @@ CLI=${CLAUDE_PLUGIN_ROOT}/skills/codemie-analytics/scripts/analytics-cli.js
 node $CLI leaderboard --tier pioneer --sort-by total_score --sort-order desc --per-page 50 --pretty
 
 # Single user champion profile
-node $CLI leaderboard-user john.doe@epam.com --pretty
+node $CLI leaderboard-user user@example.com --pretty
 
 # Leaderboard KPI summary for Q1 2026
 node $CLI leaderboard-summary --view quarterly --season-key 2026-Q1 --pretty
@@ -171,7 +227,7 @@ node $CLI summaries --time-period last_30_days --pretty
 node $CLI cli-insights --time-period last_30_days --pretty
 
 # Detailed CLI profile for a specific user
-node $CLI cli-insights-user John_Doe --time-period last_30_days --pretty
+node $CLI cli-insights-user alice@example.com --time-period last_30_days --pretty
 
 # Usage patterns (weekday + hourly + session depth)
 node $CLI cli-insights-patterns --time-period last_30_days --pretty
@@ -185,34 +241,111 @@ node $CLI custom /v1/analytics/mcp-servers --time-period last_30_days --pretty
 
 ---
 
+## Step 2.5 — Inspect data structure
+
+After collection, run `inspect-schema.js` to generate a compact `.schema.json` file
+alongside each saved JSON — one permission prompt, no data in context:
+
+```bash
+node ${CLAUDE_PLUGIN_ROOT}/skills/codemie-analytics/scripts/inspect-schema.js "$OUT"
+```
+
+Output is a short listing of generated schema files with sizes, for example:
+```
+Schemas written to: reports/2026-05-07-cli-usage/temp/
+  ✓ leaderboard-top.schema.json (1.3 KB)
+  ✓ summaries.schema.json (0.4 KB)
+  ...
+```
+
+Then **read only the `.schema.json` files you actually need** for the report using the
+`Read` tool. Each schema shows field names, types, array lengths, and string samples —
+enough to write extraction code without touching the raw responses:
+
+> **CRITICAL — schema is the source of truth for field names.**
+> Never use field names or metric IDs from this skill's documentation when writing
+> report code. Documentation can be stale. The `.schema.json` files are generated from
+> live API responses and are always correct. Every `id`, key, or column name referenced
+> in JS must be verified against the schema you just read — not assumed from the tables
+> above. If the schema contradicts the docs, trust the schema.
+
+```json
+{
+  "_envelope": "[envelope] data_as_of: '2026-05-07T02:00:10', total_count: 50",
+  "data": {
+    "rows": {
+      "_type": "array",
+      "_count": 50,
+      "_item": {
+        "rank": "number",
+        "user_name": "string ~ 'Jane Smith'",
+        "total_score": "number",
+        "tier_name": "string ~ 'expert'",
+        "score_delta": "number | null",
+        "dimensions": { "_type": "array", "_count": 6, "_item": { "id": "string ~ 'd1'", "score": "number", "weight": "number" } },
+        "summary_metrics": { "cli_sessions": "number", "active_days": "number", "total_lines_added": "number", "total_spend": "number" }
+      }
+    }
+  }
+}
+```
+
+---
+
 ## Step 3 — Build the HTML report
 
-Once you have the JSON data, delegate the presentation layer to the **`codemie-html-report`**
-skill. That skill knows the CodeMie design system, Chart.js palette, and component library.
-Do **not** hand-write HTML/CSS in this skill.
-
-### Output location
-
-**Always save reports to `reports/` in the user's current working directory.** Create the
-folder if it doesn't exist. Use descriptive filenames:
+**Save the HTML report directly inside `$REPORT_DIR`** (not in `temp/`).
+Use a kebab-case filename matching the folder name:
 
 ```
-reports/leaderboard-2026-Q1.html
-reports/cli-insights-last-30-days.html
-reports/spending-by-users-2026-04.html
+reports/2026-05-07-cli-usage/cli-usage.html
+reports/2026-05-07-leaderboard/leaderboard.html
+reports/2026-05-07-spending/spending.html
 ```
 
-### What to pass to the report skill
+### Step 3a — Write the HTML
 
-When invoking `codemie-html-report`, include:
+Invoke the **`codemie-html-report`** skill. Pass:
 
-1. **The raw JSON** collected from the CLI (one object per command/endpoint).
-2. **The user's intent** — e.g. "leaderboard dashboard with tier distribution and dimension
-   breakdown", "CLI insights with usage patterns".
-3. **Timestamp context** — most endpoints return `metadata.data_as_of`; pass it through for
-   the report subtitle.
-4. **Output path** — tell the report skill where to save, e.g. `reports/leaderboard.html`.
-5. **Pagination hints** if the data was truncated.
+1. **The schemas** inspected in Step 2.5 — field names and structure.
+2. **The user's intent** — e.g. "leaderboard dashboard with tier distribution".
+3. **Timestamp context** — `_envelope` lines in schemas include `data_as_of`.
+4. **Output path** — e.g. `$REPORT_DIR/leaderboard.html`.
+
+The HTML skill writes the file using `/*__CSS__*/` for styles and
+**`/*__DATA:name__*/` placeholders for all embedded JS data arrays**:
+
+```html
+<script>
+  const LEADERBOARD = /*__DATA:leaderboard__*/;
+  const SUMMARIES   = /*__DATA:summaries__*/;
+</script>
+```
+
+Each placeholder name maps to a saved file in `$OUT` (without the `.json` extension).
+
+### Step 3b — Inject data
+
+**After the HTML file exists**, run the shared `inject-data.js` from the `codemie-html-report`
+skill. It matches each JSON file in `$OUT` to a `/*__DATA:name__*/` placeholder by filename
+(without `.json`) and replaces it in-place.
+
+**Do not run inject-data.js before the HTML file is written.**
+
+```bash
+node ${CLAUDE_PLUGIN_ROOT}/skills/codemie-html-report/scripts/inject-data.js \
+  "$REPORT_DIR/<report>.html" "$OUT"
+```
+
+Placeholder names must exactly match the JSON filenames — `/*__DATA:leaderboard-top__*/`
+is only replaced when `leaderboard-top.json` exists in `$OUT`.
+
+Expected output:
+```
+  ✓ injected leaderboard-top
+  ✓ injected summaries
+✓ 2 data block(s) injected into reports/2026-05-07-<name>/<report>.html
+```
 
 ---
 
@@ -382,8 +515,8 @@ charts, data structure, and modal design to use, ensuring consistency across use
 
 | Report type | Reference file | When to use |
 |-------------|---------------|-------------|
-| Leaderboard dashboard | [`references/leaderboard-dashboard-report.md`](references/leaderboard-dashboard-report.md) | Any request for leaderboard rankings, AI champions, top performers, tier distribution |
-| People spending dashboard | [`references/people-spending-dashboard-report.md`](references/people-spending-dashboard-report.md) | Any request to track LiteLLM costs for a specific list of users (cohort, team, bootcamp, project) |
+| Leaderboard dashboard | [`${CLAUDE_PLUGIN_ROOT}/references/leaderboard-dashboard-report.md`](${CLAUDE_PLUGIN_ROOT}/references/leaderboard-dashboard-report.md) | Any request for leaderboard rankings, AI champions, top performers, tier distribution |
+| People spending dashboard | [`${CLAUDE_PLUGIN_ROOT}/references/people-spending-dashboard-report.md`](${CLAUDE_PLUGIN_ROOT}/references/people-spending-dashboard-report.md) | Any request to track LiteLLM costs for a specific list of users (cohort, team, bootcamp, project) |
 
 ---
 
@@ -427,7 +560,7 @@ If the command returns an auth error, HTTP 401/403/404, or "No CodeMie credentia
 > claude -f
 > ```
 
-**Full workflow** (see `references/people-spending-dashboard-report.md` for all details):
+**Full workflow** (see `${CLAUDE_PLUGIN_ROOT}/references/people-spending-dashboard-report.md` for all details):
 
 1. **Parse the list** from Excel/CSV using `openpyxl`. Skip header and TOTAL rows.
 2. **Fetch 3 LiteLLM accounts per user** using Python `asyncio` + `aiohttp` (semaphore 25,
@@ -448,7 +581,7 @@ If the command returns an auth error, HTTP 401/403/404, or "No CodeMie credentia
    conflict with JS `${...}` template literals).
 9. **Wire table clicks** — use `data-email` attribute + event delegation (never `onclick=""`
    attributes, which break under Python quote escaping).
-10. **Save** to `reports/<descriptive>.html`.
+10. **Save** to `reports/<date>-<name>/<name>.html` (temp/data files in `reports/<date>-<name>/temp/`).
 
 **Key commands:**
 ```bash
@@ -475,12 +608,22 @@ node $CLI cli-insights-users --time-period last_30_days --per-page 500 --output 
 - Budget warnings: flag rows where `spend / max_budget > 0.8` (warn) and `> 1.0` (error).
 - For the **leaderboard dashboard**, combine `leaderboard` + `leaderboard-summary` +
   `leaderboard-tiers` + `leaderboard-dimensions` to build a comprehensive view. Then follow
-  `references/leaderboard-dashboard-report.md` for the exact HTML structure.
+  `${CLAUDE_PLUGIN_ROOT}/references/leaderboard-dashboard-report.md` for the exact HTML structure.
 - For a **people spending dashboard**, fetch LiteLLM directly with Python async (3 accounts
   per user), then enrich with leaderboard + CLI insights. Follow
-  `references/people-spending-dashboard-report.md` for the exact HTML structure.
+  `${CLAUDE_PLUGIN_ROOT}/references/people-spending-dashboard-report.md` for the exact HTML structure.
 - For a **single user deep-dive**, combine `leaderboard-user <email>` with
   `cli-insights-user <name>` for the full picture (champion score + CLI activity).
 - If the CLI prints an auth error, forward its message verbatim — it already tells the user
   what to do next.
-- Always save HTML reports to `reports/` in the user's working directory.
+- Always save HTML reports to `reports/<date>-<name>/<name>.html`; temp/data files go in `reports/<date>-<name>/temp/`.
+
+## Type-Aware Rendering for `metrics[]` Arrays
+
+Analytics `metrics[]` arrays are **heterogeneous** — each item carries a `type` field
+(`"number"`, `"string"`, `"date"`, …) and a `format` field. The `value` is numeric for most
+items but may be an ISO date string or plain string for others.
+
+**Always inspect `m.type` (and `m.format`) per item before formatting.** Never apply a single
+numeric or percent formatter to the whole array — doing so silently produces `NaN` for
+string/date items.

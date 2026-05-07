@@ -71,9 +71,9 @@
  */
 
 import { createDecipheriv, createHash } from 'crypto';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, writeFileSync, mkdirSync } from 'fs';
 import { homedir, hostname, platform, arch } from 'os';
-import { join, resolve } from 'path';
+import { join, resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 // ─── Argument Parsing ────────────────────────────────────────────────────────
@@ -404,6 +404,14 @@ async function parseInputFile(filePath) {
 // ─── Output helpers ──────────────────────────────────────────────────────────
 
 function output(data) {
+  if (opts.save) {
+    const filePath = resolve(opts.save);
+    mkdirSync(dirname(filePath), { recursive: true });
+    writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+    console.log(`✓ Saved → ${filePath}`);
+    return;
+  }
+
   const fmt = opts.output || 'json';
   if (fmt === 'json' || !fmt) {
     if (opts.pretty) {
